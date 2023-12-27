@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package admin_casts_service;
+option go_package = "admin_casts_service/v1/protos";
+
+message UserErrorMessage { string message = 1 [ json_name = "message" ]; }
+
+message GetCastsRequest{
+  // use ',' as separator for multiple ids, or leave it blank if you want to get all the casts on the page
+  string MoviesIDs = 1[json_name="movies_ids"];
+
+   // must be in range 10-100
+   int32 limit = 2;
+
+   // must be > 0
+   int32 page = 3;
+}
+
+
+message Casts {
+  map<int32, Cast> casts = 1;
+}
+
+message Cast {
+  string CastLabel = 1[json_name="cast_label"];
+  int32 MovieID = 2[json_name="movie_id"];
+  repeated int32 ActorsIDs = 3[json_name="actors_ids"];
+}
+
+message GetCastRequest {
+  int32 movie_id = 1;
+}
+
+message SearchCastByLabelRequest {
+  string label = 1;
+  // must be in range 10-100
+  int32 limit = 2;
+
+  // must be > 0
+  int32 page = 3;
+}
+
+message CreateCastRequest {
+  string CastLabel = 1[json_name="cast_label"];
+  int32 MovieID = 2[json_name="movie_id"];
+  repeated int32 ActorsIDs = 3[json_name="actors_ids"];
+}
+
+message UpdateLabelForCastRequest {
+  string label = 1;
+  int32 MovieID = 2[json_name="movie_id"]; 
+}
+
+message AddActorsToTheCastRequest {
+  int32 MovieID = 1[json_name="movie_id"];
+  repeated int32 ActorsIDs = 2[json_name="actors_ids"];
+}
+
+
+message RemoveActorsFromTheCastRequest {
+  int32 MovieID = 1[json_name="movie_id"];
+   // use ',' as separator for multiple ids
+  string ActorsIDs = 2[json_name="actors_ids"];
+}
+
+message DeleteCastRequest {
+  int32 movie_id = 1;
+}
