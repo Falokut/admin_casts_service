@@ -38,6 +38,8 @@ if supported values is empty, then any type values are supported
 |server_config|  prometheus    |   | nested yml configuration  [metrics server config](#prometheus-config) | |
 |db_config|||nested yml configuration  [database config](#database-config) || configuration for database connection | |
 |jaeger|||nested yml configuration  [jaeger config](#jaeger-config)|configuration for jaeger connection ||
+|movies_events_kafka|||nested yml configuration  [kafka reader config](#kafka-reader-config)|configuration for kafka connection ||
+|persons_events_kafka|||nested yml configuration  [kafka reader config](#kafka-reader-config)|configuration for kafka connection ||
 
 ### Database config
 |yml name| env name|param type| description | supported values |
