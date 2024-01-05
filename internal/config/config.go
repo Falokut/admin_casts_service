@@ -37,6 +37,13 @@ type Config struct {
 
 	KafkaMoviesEventsConfig  KafkaReaderConfig `yaml:"movies_events_kafka"`
 	KafkaPersonsEventsConfig KafkaReaderConfig `yaml:"persons_events_kafka"`
+
+	MoviesService struct {
+		Addr string `yaml:"addr" env:"MOVIES_SERVICE_ADDRESS"`
+	} `yaml:"movies_service"`
+	MoviesPersonsService struct {
+		Addr string `yaml:"addr" env:"MOVIES_PERSONS_SERVICE_ADDRESS"`
+	} `yaml:"movies_persons_service"`
 }
 
 var instance *Config

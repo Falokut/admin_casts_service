@@ -98,8 +98,18 @@ func main() {
 		wg.Done()
 	}()
 
+	moviesCheck, err := service.NewMoviesChecker(appCfg.MoviesService.Addr)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	personsCheck, err := service.NewPersonsChecker(appCfg.MoviesPersonsService.Addr)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	checker := service.NewExistanceChecker(moviesCheck, personsCheck, logger.Logger)
+
 	logger.Info("Service initializing")
-	service := service.NewCastsService(logger.Logger, repo)
+	service := service.NewCastsService(logger.Logger, repo, checker)
 
 	logger.Info("Server initializing")
 	s := server.NewServer(logger.Logger, service)
