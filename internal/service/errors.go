@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	casts_service "github.com/Falokut/admin_casts_service/pkg/admin_casts_service/v1/protos"
 	"github.com/Falokut/grpc_errors"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
@@ -64,4 +65,36 @@ func (e *errorHandler) createErrorResponce(err error, developerMessage string) e
 
 func init() {
 	grpc_errors.RegisterErrors(errorCodes)
+}
+
+func (e *errorHandler) createExtendedErrorResponceWithSpan(span opentracing.Span,
+	err error, developerMessage, userMessage string) error {
+	if err == nil {
+		return nil
+	}
+
+	span.SetTag("grpc.status", grpc_errors.GetGrpcCode(err))
+	ext.LogError(span, err)
+	return e.createExtendedErrorResponce(err, developerMessage, userMessage)
+}
+
+func (e *errorHandler) createExtendedErrorResponce(err error, developerMessage, userMessage string) error {
+	var msg string
+	if developerMessage != "" {
+		msg = fmt.Sprintf("%s. error: %v", developerMessage, err)
+	} else {
+		msg = err.Error()
+	}
+
+	extErr := status.New(grpc_errors.GetGrpcCode(err), msg)
+	if len(userMessage) > 0 {
+		extErr, _ = extErr.WithDetails(&casts_service.UserErrorMessage{Message: userMessage})
+		if extErr == nil {
+			e.logger.Error(err)
+			return err
+		}
+	}
+
+	e.logger.Error(extErr)
+	return extErr.Err()
 }

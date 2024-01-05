@@ -17,18 +17,25 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+type ExistanceChecker interface {
+	CheckPersons(ctx context.Context, persons []*casts_service.ActorParam) error
+	CheckExistance(ctx context.Context, persons []*casts_service.ActorParam, movieID int32) error
+}
+
 type castsService struct {
 	casts_service.UnimplementedCastsServiceV1Server
+	checker      ExistanceChecker
 	logger       *logrus.Logger
 	repo         repository.CastsRepository
 	errorHandler errorHandler
 }
 
-func NewCastsService(logger *logrus.Logger, repo repository.CastsRepository) *castsService {
+func NewCastsService(logger *logrus.Logger, repo repository.CastsRepository, checker ExistanceChecker) *castsService {
 	errorHandler := newErrorHandler(logger)
 	return &castsService{
 		logger:       logger,
 		repo:         repo,
+		checker:      checker,
 		errorHandler: errorHandler,
 	}
 }
@@ -124,12 +131,22 @@ func (s *castsService) CreateCast(ctx context.Context, in *casts_service.CreateC
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.CreateCast")
 	defer span.Finish()
 
+	if len(in.Actors) == 0 {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors musn't be empty")
+	}
 	exist, id, err := s.repo.IsCastExist(ctx, in.MovieID)
 	if err != nil {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	} else if exist {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrAlreadyExists,
 			fmt.Sprintf("cast is already exists check cast with id %d", id))
+	}
+
+	err = s.checker.CheckExistance(ctx, in.Actors, in.MovieID)
+	if err != nil {
+		ext.LogError(span, err)
+		span.SetTag("grpc.status", status.Code(err))
+		return nil, err
 	}
 
 	var actors = make([]repository.Actor, len(in.Actors))
@@ -173,9 +190,16 @@ func (s *castsService) AddActorsToTheCast(ctx context.Context,
 	defer span.Finish()
 
 	if len(in.Actors) == 0 {
-		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors can't be emtpy")
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors mustn't be emtpy")
 	}
 	_, err := s.checkCastExisting(ctx, in.MovieID)
+	if err != nil {
+		ext.LogError(span, err)
+		span.SetTag("grpc.status", status.Code(err))
+		return nil, err
+	}
+
+	err = s.checker.CheckPersons(ctx, in.Actors)
 	if err != nil {
 		ext.LogError(span, err)
 		span.SetTag("grpc.status", status.Code(err))
@@ -204,7 +228,7 @@ func (s *castsService) RemoveActorsFromTheCast(ctx context.Context,
 	defer span.Finish()
 
 	if len(in.Actors) == 0 {
-		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors can't be emtpy")
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors musn't be empty")
 	}
 
 	_, err := s.checkCastExisting(ctx, in.MovieID)
