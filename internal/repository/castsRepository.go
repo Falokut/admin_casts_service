@@ -43,29 +43,32 @@ func (r *castsRepository) Shutdown() error {
 const (
 	castsTableName       = "casts"
 	castsLabelsTableName = "casts_labels"
+	professionsTableName = "professions"
 )
 
-func (r *castsRepository) GetCast(ctx context.Context, id int32) (Cast, error) {
+func (r *castsRepository) GetCast(ctx context.Context, id int32) ([]Cast, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.GetCast")
 	defer span.Finish()
 	var err error
 	defer span.SetTag("error", err != nil && errors.Is(err, sql.ErrNoRows))
 
-	query := fmt.Sprintf("SELECT %[1]s.movie_id, label, ARRAY_AGG(actor_id) as actors_ids FROM %[1]s JOIN %[2]s "+
-		"ON %[1]s.movie_id=%[2]s.movie_id "+
-		"WHERE %[1]s.movie_id=$1 "+
-		"GROUP BY %[1]s.movie_id, label;", castsTableName, castsLabelsTableName)
+	query := fmt.Sprintf("SELECT %[1]s.movie_id, COALESCE(label,'') AS label,"+
+		"actor_id, COALESCE(%[3]s.name,'') AS profession_name,COALESCE(%[3]s.id,-1) AS profession_id "+
+		"FROM %[1]s LEFT JOIN %[2]s "+
+		"ON %[1]s.movie_id=%[2]s.movie_id LEFT JOIN %[3]s ON profession_id=%[3]s.id "+
+		"WHERE %[1]s.movie_id=$1",
+		castsTableName, castsLabelsTableName, professionsTableName)
 
-	var cast Cast
-	err = r.db.GetContext(ctx, &cast, query, id)
-	if errors.Is(err, sql.ErrNoRows) {
-		return Cast{}, ErrNotFound
-	} else if err != nil {
+	var cast []Cast
+	err = r.db.SelectContext(ctx, &cast, query, id)
+	if err != nil {
 		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, id)
-		return Cast{}, err
+		return []Cast{}, err
+	}
+	if len(cast) == 0 {
+		return []Cast{}, ErrNotFound
 	}
 
-	cast.Actors = strings.Trim(cast.Actors, "{}")
 	return cast, nil
 }
 
@@ -75,9 +78,12 @@ func (r *castsRepository) GetAllCasts(ctx context.Context, limit, offset int32) 
 	var err error
 	defer span.SetTag("error", err != nil)
 
-	query := fmt.Sprintf("SELECT %[1]s.movie_id, label, ARRAY_AGG(actor_id) as actors_ids FROM %[1]s JOIN %[2]s "+
-		"ON %[1]s.movie_id=%[2]s.movie_id "+
-		"GROUP BY %[1]s.movie_id, label LIMIT %[3]d OFFSET %[4]d;", castsTableName, castsLabelsTableName, limit, offset)
+	query := fmt.Sprintf("SELECT %[1]s.movie_id, COALESCE(label,'') AS label,"+
+		"actor_id, COALESCE(%[3]s.name,'') AS profession_name,COALESCE(%[3]s.id,-1) AS profession_id "+
+		"FROM %[1]s LEFT JOIN %[2]s "+
+		"ON %[1]s.movie_id=%[2]s.movie_id LEFT JOIN %[3]s ON profession_id=%[3]s.id "+
+		"LIMIT %[4]d OFFSET %[5]d;",
+		castsTableName, castsLabelsTableName, professionsTableName, limit, offset)
 
 	var casts []Cast
 	err = r.db.SelectContext(ctx, &casts, query)
@@ -89,11 +95,6 @@ func (r *castsRepository) GetAllCasts(ctx context.Context, limit, offset int32) 
 		return []Cast{}, ErrNotFound
 	}
 
-	for i := 0; i < len(casts); i++ {
-		casts[i].Actors = strings.Trim(casts[i].Actors, "{}")
-
-	}
-
 	return casts, nil
 }
 
@@ -103,10 +104,13 @@ func (r *castsRepository) GetCasts(ctx context.Context, ids []int32, limit, offs
 	var err error
 	defer span.SetTag("error", err != nil)
 
-	query := fmt.Sprintf("SELECT %[1]s.movie_id, label, ARRAY_AGG(actor_id) as actors_ids FROM %[1]s JOIN %[2]s "+
-		"ON %[1]s.movie_id=%[2]s.movie_id "+
+	query := fmt.Sprintf("SELECT %[1]s.movie_id, COALESCE(label,'') AS label,"+
+		"actor_id, COALESCE(%[3]s.name,'') AS profession_name,COALESCE(%[3]s.id,-1) AS profession_id "+
+		"FROM %[1]s LEFT JOIN %[2]s "+
+		"ON %[1]s.movie_id=%[2]s.movie_id LEFT JOIN %[3]s ON profession_id=%[3]s.id "+
 		"WHERE %[1]s.movie_id=ANY($1) "+
-		"GROUP BY %[1]s.movie_id, label LIMIT %[3]d OFFSET %[4]d;", castsTableName, castsLabelsTableName, limit, offset)
+		"LIMIT %[4]d OFFSET %[5]d;",
+		castsTableName, castsLabelsTableName, professionsTableName, limit, offset)
 
 	var casts []Cast
 	err = r.db.SelectContext(ctx, &casts, query, ids)
@@ -118,39 +122,28 @@ func (r *castsRepository) GetCasts(ctx context.Context, ids []int32, limit, offs
 		return []Cast{}, ErrNotFound
 	}
 
-	for i := 0; i < len(casts); i++ {
-		casts[i].Actors = strings.Trim(casts[i].Actors, "{}")
-
-	}
-
 	return casts, nil
 }
 
-func (r *castsRepository) SearchCastByLabel(ctx context.Context, label string, limit, offset int32) ([]Cast, error) {
+func (r *castsRepository) SearchCastByLabel(ctx context.Context, label string, limit, offset int32) ([]CastLabel, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.SearchCastByLabel")
 	defer span.Finish()
 	var err error
 	defer span.SetTag("error", err != nil)
 
-	query := fmt.Sprintf("SELECT %[1]s.movie_id, label, ARRAY_AGG(actor_id) as actors_ids FROM %[1]s JOIN %[2]s "+
-		"ON %[1]s.movie_id=%[2]s.movie_id "+
-		"WHERE label=LIKE($1) "+
-		"GROUP BY %[1]s.movie_id, label LIMIT %[3]d OFFSET %[4]d;", castsTableName, castsLabelsTableName, limit, offset)
+	query := fmt.Sprintf("SELECT %[1]s.movie_id as movie_id, label "+
+		"FROM %[1]s JOIN %[2]s ON %[1]s.movie_id=%[2]s.movie_id WHERE label LIKE($1) "+
+		"LIMIT %[3]d OFFSET %[4]d;", castsTableName, castsLabelsTableName, limit, offset)
 
-	var casts []Cast
+	var casts []CastLabel
 	label += "%"
 	err = r.db.SelectContext(ctx, &casts, query, label)
 	if err != nil {
 		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, label)
-		return []Cast{}, err
+		return []CastLabel{}, err
 	}
 	if len(casts) == 0 {
-		return []Cast{}, ErrNotFound
-	}
-
-	for i := 0; i < len(casts); i++ {
-		casts[i].Actors = strings.Trim(casts[i].Actors, "{}")
-
+		return []CastLabel{}, ErrNotFound
 	}
 
 	return casts, nil
@@ -175,7 +168,7 @@ func (r *castsRepository) IsCastExist(ctx context.Context, id int32) (bool, int3
 	return true, foundedID, nil
 }
 
-func (r *castsRepository) CreateCast(ctx context.Context, id int32, label string, actors []int32) error {
+func (r *castsRepository) CreateCast(ctx context.Context, id int32, label string, actors []Actor) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.CreateCast")
 	defer span.Finish()
 	var err error
@@ -187,11 +180,11 @@ func (r *castsRepository) CreateCast(ctx context.Context, id int32, label string
 	}
 
 	values := make([]string, 0, len(actors))
-	for _, actorID := range actors {
-		values = append(values, fmt.Sprintf("(%d,%d)", id, actorID))
+	for _, actor := range actors {
+		values = append(values, fmt.Sprintf("(%d,%d,%d)", id, actor.ID, actor.ProfessionID))
 	}
 
-	query := fmt.Sprintf("INSERT INTO %s (movie_id,actor_id) VALUES %s ON CONFLICT DO NOTHING;", castsTableName,
+	query := fmt.Sprintf("INSERT INTO %s (movie_id,actor_id,profession_id) VALUES %s ON CONFLICT DO NOTHING;", castsTableName,
 		strings.Join(values, ","))
 	_, err = tx.ExecContext(ctx, query)
 	if err != nil {
@@ -274,17 +267,18 @@ func (r *castsRepository) UpdateLabelForCast(ctx context.Context, id int32, labe
 	return nil
 }
 
-func (r *castsRepository) AddActorsToTheCast(ctx context.Context, id int32, actorsIDs []int32) error {
+func (r *castsRepository) AddActorsToTheCast(ctx context.Context, id int32, actors []Actor) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.AddActorsToTheCast")
 	defer span.Finish()
 	var err error
 	defer span.SetTag("error", err != nil && !errors.Is(err, sql.ErrNoRows))
 
-	values := make([]string, 0, len(actorsIDs))
-	for _, actorID := range actorsIDs {
-		values = append(values, fmt.Sprintf("(%d,%d)", id, actorID))
+	values := make([]string, 0, len(actors))
+	for _, actor := range actors {
+		values = append(values, fmt.Sprintf("(%d,%d,%d)", id, actor.ID, actor.ProfessionID))
 	}
-	query := fmt.Sprintf("INSERT INTO %s (movie_id,actor_id) VALUES %s ON CONFLICT DO NOTHING;",
+
+	query := fmt.Sprintf("INSERT INTO %s (movie_id,actor_id,profession_id) VALUES %s ON CONFLICT DO NOTHING;",
 		castsTableName, strings.Join(values, ","))
 
 	_, err = r.db.ExecContext(ctx, query)
@@ -296,18 +290,137 @@ func (r *castsRepository) AddActorsToTheCast(ctx context.Context, id int32, acto
 	return nil
 }
 
-func (r *castsRepository) RemoveActorsFromCast(ctx context.Context, id int32, actorsIDs []int32) error {
+func (r *castsRepository) RemoveActorsFromCast(ctx context.Context, id int32, actors []Actor) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.DeleteActorsFromTheCast")
 	defer span.Finish()
 	var err error
 	defer span.SetTag("error", err != nil)
 
-	query := fmt.Sprintf("DELETE FROM %s WHERE movie_id=$1 AND actor_id=ANY($2)", castsTableName)
-	_, err = r.db.ExecContext(ctx, query, id, actorsIDs)
+	statements := make([]string, 0, len(actors))
+	args := make([]any, 0, len(actors)*3)
+	args = append(args, id)
+	for _, actor := range actors {
+		args = append(args, actor.ID)
+		statements = append(statements, fmt.Sprintf("(actor_id=$%d AND profession_id=$%d)", len(args), len(args)+1))
+		args = append(args, actor.ProfessionID)
+	}
+
+	query := fmt.Sprintf("DELETE FROM %s WHERE movie_id=$1 AND(%s)", castsTableName, strings.Join(statements, " OR "))
+	_, err = r.db.ExecContext(ctx, query, args...)
 	if err != nil {
-		r.logger.Errorf("%v query: %s args: movie_id: %v actors_ids: %v", err.Error(), query, id, actorsIDs)
+		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, args)
 		return err
 	}
 
 	return nil
+}
+
+func (r *castsRepository) DeleteProfession(ctx context.Context, id int32) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.DeleteProfession")
+	defer span.Finish()
+	var err error
+	defer span.SetTag("error", err != nil)
+
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 RETURNING id", professionsTableName)
+	var delId int32
+	err = r.db.GetContext(ctx, &delId, query, id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrNotFound
+	}
+	if err != nil {
+		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, id)
+		return err
+	}
+
+	return nil
+}
+
+func (r *castsRepository) CreateProfession(ctx context.Context, name string) (int32, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.CreateProfession")
+	defer span.Finish()
+	var err error
+	defer span.SetTag("error", err != nil)
+
+	query := fmt.Sprintf("INSERT INTO %s (name) VALUES($1) RETURNING id", professionsTableName)
+	var createdID int32
+	err = r.db.GetContext(ctx, &createdID, query, name)
+	if err != nil {
+		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, name)
+		return 0, err
+	}
+
+	return createdID, nil
+}
+
+func (r *castsRepository) IsProfessionWithNameExists(ctx context.Context, name string) (bool, int32, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.IsProfessionWithNameExists")
+	defer span.Finish()
+	var err error
+	defer span.SetTag("error", err != nil)
+
+	query := fmt.Sprintf("SELECT id FROM %s WHERE name=$1", professionsTableName)
+	var id int32
+	err = r.db.GetContext(ctx, &id, query, name)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, 0, nil
+	}
+	if err != nil {
+		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, name)
+		return false, 0, err
+	}
+
+	return true, id, nil
+}
+
+func (r *castsRepository) UpdateProfession(ctx context.Context, id int32, name string) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.UpdateProfession")
+	defer span.Finish()
+	var err error
+	defer span.SetTag("error", err != nil)
+
+	query := fmt.Sprintf("UPDATE %s SET name=$1 WHERE id=$2", professionsTableName)
+	_, err = r.db.ExecContext(ctx, query, name, id)
+	if err != nil {
+		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, id)
+		return err
+	}
+
+	return nil
+}
+
+func (r *castsRepository) GetAllProfessions(ctx context.Context) ([]Profession, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.IsProfessionWithNameExists")
+	defer span.Finish()
+	var err error
+	defer span.SetTag("error", err != nil)
+
+	query := fmt.Sprintf("SELECT * FROM %s", professionsTableName)
+	var professions []Profession
+	err = r.db.SelectContext(ctx, &professions, query)
+	if err != nil {
+		r.logger.Errorf("%v query: %s", err.Error(), query)
+		return []Profession{}, err
+	}
+
+	return professions, nil
+}
+
+func (r *castsRepository) IsProfessionExists(ctx context.Context, id int32) (bool, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.IsProfessionExists")
+	defer span.Finish()
+	var err error
+	defer span.SetTag("error", err != nil)
+
+	query := fmt.Sprintf("SELECT id FROM %s WHERE id=$1", professionsTableName)
+	var findedid int32
+	err = r.db.GetContext(ctx, &findedid, query, id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
+	if err != nil {
+		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, id)
+		return false, err
+	}
+
+	return true, nil
 }

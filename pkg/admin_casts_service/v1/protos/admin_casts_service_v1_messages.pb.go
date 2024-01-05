@@ -138,7 +138,7 @@ type Casts struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Casts map[int32]*Cast `protobuf:"bytes,1,rep,name=casts,proto3" json:"casts,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Casts []*Cast `protobuf:"bytes,1,rep,name=casts,proto3" json:"casts,omitempty"`
 }
 
 func (x *Casts) Reset() {
@@ -173,9 +173,119 @@ func (*Casts) Descriptor() ([]byte, []int) {
 	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *Casts) GetCasts() map[int32]*Cast {
+func (x *Casts) GetCasts() []*Cast {
 	if x != nil {
 		return x.Casts
+	}
+	return nil
+}
+
+type Profession struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ID   int32  `protobuf:"varint,1,opt,name=ID,json=id,proto3" json:"ID,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *Profession) Reset() {
+	*x = Profession{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Profession) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Profession) ProtoMessage() {}
+
+func (x *Profession) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Profession.ProtoReflect.Descriptor instead.
+func (*Profession) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Profession) GetID() int32 {
+	if x != nil {
+		return x.ID
+	}
+	return 0
+}
+
+func (x *Profession) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type Actor struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ID         int32       `protobuf:"varint,1,opt,name=ID,json=id,proto3" json:"ID,omitempty"`
+	Profession *Profession `protobuf:"bytes,2,opt,name=profession,proto3" json:"profession,omitempty"`
+}
+
+func (x *Actor) Reset() {
+	*x = Actor{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Actor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Actor) ProtoMessage() {}
+
+func (x *Actor) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Actor.ProtoReflect.Descriptor instead.
+func (*Actor) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Actor) GetID() int32 {
+	if x != nil {
+		return x.ID
+	}
+	return 0
+}
+
+func (x *Actor) GetProfession() *Profession {
+	if x != nil {
+		return x.Profession
 	}
 	return nil
 }
@@ -185,15 +295,15 @@ type Cast struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	CastLabel string  `protobuf:"bytes,1,opt,name=CastLabel,json=cast_label,proto3" json:"CastLabel,omitempty"`
-	MovieID   int32   `protobuf:"varint,2,opt,name=MovieID,json=movie_id,proto3" json:"MovieID,omitempty"`
-	ActorsIDs []int32 `protobuf:"varint,3,rep,packed,name=ActorsIDs,json=actors_ids,proto3" json:"ActorsIDs,omitempty"`
+	MovieID   int32    `protobuf:"varint,1,opt,name=MovieID,json=movie_id,proto3" json:"MovieID,omitempty"`
+	CastLabel string   `protobuf:"bytes,2,opt,name=CastLabel,json=cast_label,proto3" json:"CastLabel,omitempty"`
+	Actors    []*Actor `protobuf:"bytes,3,rep,name=Actors,json=actors,proto3" json:"Actors,omitempty"`
 }
 
 func (x *Cast) Reset() {
 	*x = Cast{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[3]
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -206,7 +316,7 @@ func (x *Cast) String() string {
 func (*Cast) ProtoMessage() {}
 
 func (x *Cast) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[3]
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -219,14 +329,7 @@ func (x *Cast) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cast.ProtoReflect.Descriptor instead.
 func (*Cast) Descriptor() ([]byte, []int) {
-	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *Cast) GetCastLabel() string {
-	if x != nil {
-		return x.CastLabel
-	}
-	return ""
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Cast) GetMovieID() int32 {
@@ -236,9 +339,63 @@ func (x *Cast) GetMovieID() int32 {
 	return 0
 }
 
-func (x *Cast) GetActorsIDs() []int32 {
+func (x *Cast) GetCastLabel() string {
 	if x != nil {
-		return x.ActorsIDs
+		return x.CastLabel
+	}
+	return ""
+}
+
+func (x *Cast) GetActors() []*Actor {
+	if x != nil {
+		return x.Actors
+	}
+	return nil
+}
+
+type Professions struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Professions []*Profession `protobuf:"bytes,1,rep,name=professions,proto3" json:"professions,omitempty"`
+}
+
+func (x *Professions) Reset() {
+	*x = Professions{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Professions) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Professions) ProtoMessage() {}
+
+func (x *Professions) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Professions.ProtoReflect.Descriptor instead.
+func (*Professions) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Professions) GetProfessions() []*Profession {
+	if x != nil {
+		return x.Professions
 	}
 	return nil
 }
@@ -254,7 +411,7 @@ type GetCastRequest struct {
 func (x *GetCastRequest) Reset() {
 	*x = GetCastRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[4]
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -267,7 +424,7 @@ func (x *GetCastRequest) String() string {
 func (*GetCastRequest) ProtoMessage() {}
 
 func (x *GetCastRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[4]
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -280,7 +437,7 @@ func (x *GetCastRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCastRequest.ProtoReflect.Descriptor instead.
 func (*GetCastRequest) Descriptor() ([]byte, []int) {
-	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{4}
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetCastRequest) GetMovieId() int32 {
@@ -288,6 +445,304 @@ func (x *GetCastRequest) GetMovieId() int32 {
 		return x.MovieId
 	}
 	return 0
+}
+
+type CreateProfessionRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *CreateProfessionRequest) Reset() {
+	*x = CreateProfessionRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateProfessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateProfessionRequest) ProtoMessage() {}
+
+func (x *CreateProfessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateProfessionRequest.ProtoReflect.Descriptor instead.
+func (*CreateProfessionRequest) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *CreateProfessionRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type CreateProfessionResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (x *CreateProfessionResponse) Reset() {
+	*x = CreateProfessionResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateProfessionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateProfessionResponse) ProtoMessage() {}
+
+func (x *CreateProfessionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateProfessionResponse.ProtoReflect.Descriptor instead.
+func (*CreateProfessionResponse) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CreateProfessionResponse) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type UpdateProfessionRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ID   int32  `protobuf:"varint,1,opt,name=ID,json=id,proto3" json:"ID,omitempty"`
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *UpdateProfessionRequest) Reset() {
+	*x = UpdateProfessionRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateProfessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateProfessionRequest) ProtoMessage() {}
+
+func (x *UpdateProfessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateProfessionRequest.ProtoReflect.Descriptor instead.
+func (*UpdateProfessionRequest) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *UpdateProfessionRequest) GetID() int32 {
+	if x != nil {
+		return x.ID
+	}
+	return 0
+}
+
+func (x *UpdateProfessionRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type DeleteProfessionRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (x *DeleteProfessionRequest) Reset() {
+	*x = DeleteProfessionRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteProfessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteProfessionRequest) ProtoMessage() {}
+
+func (x *DeleteProfessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteProfessionRequest.ProtoReflect.Descriptor instead.
+func (*DeleteProfessionRequest) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *DeleteProfessionRequest) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type CastLabel struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	MovieID   int32  `protobuf:"varint,1,opt,name=MovieID,json=movie_id,proto3" json:"MovieID,omitempty"`
+	CastLabel string `protobuf:"bytes,2,opt,name=CastLabel,json=cast_label,proto3" json:"CastLabel,omitempty"`
+}
+
+func (x *CastLabel) Reset() {
+	*x = CastLabel{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CastLabel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CastLabel) ProtoMessage() {}
+
+func (x *CastLabel) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CastLabel.ProtoReflect.Descriptor instead.
+func (*CastLabel) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *CastLabel) GetMovieID() int32 {
+	if x != nil {
+		return x.MovieID
+	}
+	return 0
+}
+
+func (x *CastLabel) GetCastLabel() string {
+	if x != nil {
+		return x.CastLabel
+	}
+	return ""
+}
+
+type CastsLabels struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Casts []*CastLabel `protobuf:"bytes,1,rep,name=casts,proto3" json:"casts,omitempty"`
+}
+
+func (x *CastsLabels) Reset() {
+	*x = CastsLabels{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CastsLabels) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CastsLabels) ProtoMessage() {}
+
+func (x *CastsLabels) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CastsLabels.ProtoReflect.Descriptor instead.
+func (*CastsLabels) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *CastsLabels) GetCasts() []*CastLabel {
+	if x != nil {
+		return x.Casts
+	}
+	return nil
 }
 
 type SearchCastByLabelRequest struct {
@@ -305,7 +760,7 @@ type SearchCastByLabelRequest struct {
 func (x *SearchCastByLabelRequest) Reset() {
 	*x = SearchCastByLabelRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[5]
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -318,7 +773,7 @@ func (x *SearchCastByLabelRequest) String() string {
 func (*SearchCastByLabelRequest) ProtoMessage() {}
 
 func (x *SearchCastByLabelRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[5]
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -331,7 +786,7 @@ func (x *SearchCastByLabelRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchCastByLabelRequest.ProtoReflect.Descriptor instead.
 func (*SearchCastByLabelRequest) Descriptor() ([]byte, []int) {
-	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{5}
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *SearchCastByLabelRequest) GetLabel() string {
@@ -355,20 +810,75 @@ func (x *SearchCastByLabelRequest) GetPage() int32 {
 	return 0
 }
 
+type ActorParam struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id           int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ProfessionID int32 `protobuf:"varint,2,opt,name=professionID,json=profession_id,proto3" json:"professionID,omitempty"`
+}
+
+func (x *ActorParam) Reset() {
+	*x = ActorParam{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ActorParam) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ActorParam) ProtoMessage() {}
+
+func (x *ActorParam) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ActorParam.ProtoReflect.Descriptor instead.
+func (*ActorParam) Descriptor() ([]byte, []int) {
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *ActorParam) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *ActorParam) GetProfessionID() int32 {
+	if x != nil {
+		return x.ProfessionID
+	}
+	return 0
+}
+
 type CreateCastRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	CastLabel string  `protobuf:"bytes,1,opt,name=CastLabel,json=cast_label,proto3" json:"CastLabel,omitempty"`
-	MovieID   int32   `protobuf:"varint,2,opt,name=MovieID,json=movie_id,proto3" json:"MovieID,omitempty"`
-	ActorsIDs []int32 `protobuf:"varint,3,rep,packed,name=ActorsIDs,json=actors_ids,proto3" json:"ActorsIDs,omitempty"`
+	CastLabel string        `protobuf:"bytes,1,opt,name=CastLabel,json=cast_label,proto3" json:"CastLabel,omitempty"`
+	MovieID   int32         `protobuf:"varint,2,opt,name=MovieID,json=movie_id,proto3" json:"MovieID,omitempty"`
+	Actors    []*ActorParam `protobuf:"bytes,3,rep,name=Actors,json=actors,proto3" json:"Actors,omitempty"`
 }
 
 func (x *CreateCastRequest) Reset() {
 	*x = CreateCastRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[6]
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -381,7 +891,7 @@ func (x *CreateCastRequest) String() string {
 func (*CreateCastRequest) ProtoMessage() {}
 
 func (x *CreateCastRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[6]
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -394,7 +904,7 @@ func (x *CreateCastRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCastRequest.ProtoReflect.Descriptor instead.
 func (*CreateCastRequest) Descriptor() ([]byte, []int) {
-	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{6}
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *CreateCastRequest) GetCastLabel() string {
@@ -411,9 +921,9 @@ func (x *CreateCastRequest) GetMovieID() int32 {
 	return 0
 }
 
-func (x *CreateCastRequest) GetActorsIDs() []int32 {
+func (x *CreateCastRequest) GetActors() []*ActorParam {
 	if x != nil {
-		return x.ActorsIDs
+		return x.Actors
 	}
 	return nil
 }
@@ -430,7 +940,7 @@ type UpdateLabelForCastRequest struct {
 func (x *UpdateLabelForCastRequest) Reset() {
 	*x = UpdateLabelForCastRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[7]
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -443,7 +953,7 @@ func (x *UpdateLabelForCastRequest) String() string {
 func (*UpdateLabelForCastRequest) ProtoMessage() {}
 
 func (x *UpdateLabelForCastRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[7]
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -456,7 +966,7 @@ func (x *UpdateLabelForCastRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateLabelForCastRequest.ProtoReflect.Descriptor instead.
 func (*UpdateLabelForCastRequest) Descriptor() ([]byte, []int) {
-	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{7}
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *UpdateLabelForCastRequest) GetLabel() string {
@@ -478,14 +988,14 @@ type AddActorsToTheCastRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	MovieID   int32   `protobuf:"varint,1,opt,name=MovieID,json=movie_id,proto3" json:"MovieID,omitempty"`
-	ActorsIDs []int32 `protobuf:"varint,2,rep,packed,name=ActorsIDs,json=actors_ids,proto3" json:"ActorsIDs,omitempty"`
+	MovieID int32         `protobuf:"varint,1,opt,name=MovieID,json=movie_id,proto3" json:"MovieID,omitempty"`
+	Actors  []*ActorParam `protobuf:"bytes,2,rep,name=Actors,json=actors,proto3" json:"Actors,omitempty"`
 }
 
 func (x *AddActorsToTheCastRequest) Reset() {
 	*x = AddActorsToTheCastRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[8]
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -498,7 +1008,7 @@ func (x *AddActorsToTheCastRequest) String() string {
 func (*AddActorsToTheCastRequest) ProtoMessage() {}
 
 func (x *AddActorsToTheCastRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[8]
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -511,7 +1021,7 @@ func (x *AddActorsToTheCastRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddActorsToTheCastRequest.ProtoReflect.Descriptor instead.
 func (*AddActorsToTheCastRequest) Descriptor() ([]byte, []int) {
-	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{8}
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *AddActorsToTheCastRequest) GetMovieID() int32 {
@@ -521,9 +1031,9 @@ func (x *AddActorsToTheCastRequest) GetMovieID() int32 {
 	return 0
 }
 
-func (x *AddActorsToTheCastRequest) GetActorsIDs() []int32 {
+func (x *AddActorsToTheCastRequest) GetActors() []*ActorParam {
 	if x != nil {
-		return x.ActorsIDs
+		return x.Actors
 	}
 	return nil
 }
@@ -533,15 +1043,14 @@ type RemoveActorsFromTheCastRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	MovieID int32 `protobuf:"varint,1,opt,name=MovieID,json=movie_id,proto3" json:"MovieID,omitempty"`
-	// use ',' as separator for multiple ids
-	ActorsIDs string `protobuf:"bytes,2,opt,name=ActorsIDs,json=actors_ids,proto3" json:"ActorsIDs,omitempty"`
+	MovieID int32         `protobuf:"varint,1,opt,name=MovieID,json=movie_id,proto3" json:"MovieID,omitempty"`
+	Actors  []*ActorParam `protobuf:"bytes,3,rep,name=Actors,json=actors,proto3" json:"Actors,omitempty"`
 }
 
 func (x *RemoveActorsFromTheCastRequest) Reset() {
 	*x = RemoveActorsFromTheCastRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[9]
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -554,7 +1063,7 @@ func (x *RemoveActorsFromTheCastRequest) String() string {
 func (*RemoveActorsFromTheCastRequest) ProtoMessage() {}
 
 func (x *RemoveActorsFromTheCastRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[9]
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -567,7 +1076,7 @@ func (x *RemoveActorsFromTheCastRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveActorsFromTheCastRequest.ProtoReflect.Descriptor instead.
 func (*RemoveActorsFromTheCastRequest) Descriptor() ([]byte, []int) {
-	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{9}
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *RemoveActorsFromTheCastRequest) GetMovieID() int32 {
@@ -577,11 +1086,11 @@ func (x *RemoveActorsFromTheCastRequest) GetMovieID() int32 {
 	return 0
 }
 
-func (x *RemoveActorsFromTheCastRequest) GetActorsIDs() string {
+func (x *RemoveActorsFromTheCastRequest) GetActors() []*ActorParam {
 	if x != nil {
-		return x.ActorsIDs
+		return x.Actors
 	}
-	return ""
+	return nil
 }
 
 type DeleteCastRequest struct {
@@ -595,7 +1104,7 @@ type DeleteCastRequest struct {
 func (x *DeleteCastRequest) Reset() {
 	*x = DeleteCastRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[10]
+		mi := &file_admin_casts_service_v1_messages_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -608,7 +1117,7 @@ func (x *DeleteCastRequest) String() string {
 func (*DeleteCastRequest) ProtoMessage() {}
 
 func (x *DeleteCastRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[10]
+	mi := &file_admin_casts_service_v1_messages_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -621,7 +1130,7 @@ func (x *DeleteCastRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCastRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCastRequest) Descriptor() ([]byte, []int) {
-	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{10}
+	return file_admin_casts_service_v1_messages_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *DeleteCastRequest) GetMovieId() int32 {
@@ -646,60 +1155,99 @@ var file_admin_casts_service_v1_messages_proto_rawDesc = []byte{
 	0x52, 0x0a, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x73, 0x5f, 0x69, 0x64, 0x73, 0x12, 0x14, 0x0a, 0x05,
 	0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x6c, 0x69, 0x6d,
 	0x69, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x61, 0x67, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05,
-	0x52, 0x04, 0x70, 0x61, 0x67, 0x65, 0x22, 0x99, 0x01, 0x0a, 0x05, 0x43, 0x61, 0x73, 0x74, 0x73,
-	0x12, 0x3b, 0x0a, 0x05, 0x63, 0x61, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x25, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f, 0x73, 0x65,
-	0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x43, 0x61, 0x73, 0x74, 0x73, 0x2e, 0x43, 0x61, 0x73, 0x74,
-	0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x05, 0x63, 0x61, 0x73, 0x74, 0x73, 0x1a, 0x53, 0x0a,
-	0x0a, 0x43, 0x61, 0x73, 0x74, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b,
-	0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x2f, 0x0a,
-	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x61,
-	0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69,
-	0x63, 0x65, 0x2e, 0x43, 0x61, 0x73, 0x74, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02,
-	0x38, 0x01, 0x22, 0x5f, 0x0a, 0x04, 0x43, 0x61, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x09, 0x43, 0x61,
-	0x73, 0x74, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63,
-	0x61, 0x73, 0x74, 0x5f, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x12, 0x19, 0x0a, 0x07, 0x4d, 0x6f, 0x76,
-	0x69, 0x65, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x6d, 0x6f, 0x76, 0x69,
-	0x65, 0x5f, 0x69, 0x64, 0x12, 0x1d, 0x0a, 0x09, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x49, 0x44,
-	0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x05, 0x52, 0x0a, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x5f,
-	0x69, 0x64, 0x73, 0x22, 0x2b, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x43, 0x61, 0x73, 0x74, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x49, 0x64,
-	0x22, 0x5a, 0x0a, 0x18, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x43, 0x61, 0x73, 0x74, 0x42, 0x79,
-	0x4c, 0x61, 0x62, 0x65, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05,
-	0x6c, 0x61, 0x62, 0x65, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x61, 0x62,
-	0x65, 0x6c, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x05, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x61, 0x67, 0x65,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x61, 0x67, 0x65, 0x22, 0x6c, 0x0a, 0x11,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x61, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x12, 0x1d, 0x0a, 0x09, 0x43, 0x61, 0x73, 0x74, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x61, 0x73, 0x74, 0x5f, 0x6c, 0x61, 0x62, 0x65, 0x6c,
-	0x12, 0x19, 0x0a, 0x07, 0x4d, 0x6f, 0x76, 0x69, 0x65, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x05, 0x52, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69, 0x64, 0x12, 0x1d, 0x0a, 0x09, 0x41,
-	0x63, 0x74, 0x6f, 0x72, 0x73, 0x49, 0x44, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x05, 0x52, 0x0a,
-	0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x5f, 0x69, 0x64, 0x73, 0x22, 0x4c, 0x0a, 0x19, 0x55, 0x70,
+	0x52, 0x04, 0x70, 0x61, 0x67, 0x65, 0x22, 0x38, 0x0a, 0x05, 0x43, 0x61, 0x73, 0x74, 0x73, 0x12,
+	0x2f, 0x0a, 0x05, 0x63, 0x61, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19,
+	0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x2e, 0x43, 0x61, 0x73, 0x74, 0x52, 0x05, 0x63, 0x61, 0x73, 0x74, 0x73,
+	0x22, 0x30, 0x0a, 0x0a, 0x50, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x0e,
+	0x0a, 0x02, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12,
+	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x22, 0x58, 0x0a, 0x05, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x49,
+	0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x3f, 0x0a, 0x0a, 0x70,
+	0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1f, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f, 0x73, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x50, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x52, 0x0a, 0x70, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x74, 0x0a, 0x04,
+	0x43, 0x61, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x07, 0x4d, 0x6f, 0x76, 0x69, 0x65, 0x49, 0x44, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69, 0x64, 0x12,
+	0x1d, 0x0a, 0x09, 0x43, 0x61, 0x73, 0x74, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0a, 0x63, 0x61, 0x73, 0x74, 0x5f, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x12, 0x32,
+	0x0a, 0x06, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x2e, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x06, 0x61, 0x63, 0x74, 0x6f,
+	0x72, 0x73, 0x22, 0x50, 0x0a, 0x0b, 0x50, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x73, 0x12, 0x41, 0x0a, 0x0b, 0x70, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63,
+	0x61, 0x73, 0x74, 0x73, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x50, 0x72, 0x6f,
+	0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x0b, 0x70, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x73, 0x22, 0x2b, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x43, 0x61, 0x73, 0x74, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x49,
+	0x64, 0x22, 0x2d, 0x0a, 0x17, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x66, 0x65,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x22, 0x2a, 0x0a, 0x18, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x66, 0x65, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x22, 0x3d, 0x0a, 0x17,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x29, 0x0a, 0x17, 0x44,
+	0x65, 0x6c, 0x65, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x22, 0x45, 0x0a, 0x09, 0x43, 0x61, 0x73, 0x74, 0x4c, 0x61,
+	0x62, 0x65, 0x6c, 0x12, 0x19, 0x0a, 0x07, 0x4d, 0x6f, 0x76, 0x69, 0x65, 0x49, 0x44, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69, 0x64, 0x12, 0x1d,
+	0x0a, 0x09, 0x43, 0x61, 0x73, 0x74, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0a, 0x63, 0x61, 0x73, 0x74, 0x5f, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x22, 0x43, 0x0a,
+	0x0b, 0x43, 0x61, 0x73, 0x74, 0x73, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x12, 0x34, 0x0a, 0x05,
+	0x63, 0x61, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x61, 0x64,
+	0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x2e, 0x43, 0x61, 0x73, 0x74, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x52, 0x05, 0x63, 0x61, 0x73,
+	0x74, 0x73, 0x22, 0x5a, 0x0a, 0x18, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x43, 0x61, 0x73, 0x74,
+	0x42, 0x79, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14,
+	0x0a, 0x05, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c,
+	0x61, 0x62, 0x65, 0x6c, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x61,
+	0x67, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x61, 0x67, 0x65, 0x22, 0x41,
+	0x0a, 0x0a, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x12, 0x0e, 0x0a, 0x02,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x23, 0x0a, 0x0c,
+	0x70, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x0d, 0x70, 0x72, 0x6f, 0x66, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x5f, 0x69,
+	0x64, 0x22, 0x86, 0x01, 0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x61, 0x73, 0x74,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x09, 0x43, 0x61, 0x73, 0x74, 0x4c,
+	0x61, 0x62, 0x65, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x61, 0x73, 0x74,
+	0x5f, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x12, 0x19, 0x0a, 0x07, 0x4d, 0x6f, 0x76, 0x69, 0x65, 0x49,
+	0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69,
+	0x64, 0x12, 0x37, 0x0a, 0x06, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x1f, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f,
+	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x50, 0x61, 0x72,
+	0x61, 0x6d, 0x52, 0x06, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x22, 0x4c, 0x0a, 0x19, 0x55, 0x70,
 	0x64, 0x61, 0x74, 0x65, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x46, 0x6f, 0x72, 0x43, 0x61, 0x73, 0x74,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x61, 0x62, 0x65, 0x6c,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x12, 0x19, 0x0a,
 	0x07, 0x4d, 0x6f, 0x76, 0x69, 0x65, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08,
-	0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69, 0x64, 0x22, 0x55, 0x0a, 0x19, 0x41, 0x64, 0x64, 0x41,
+	0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69, 0x64, 0x22, 0x6f, 0x0a, 0x19, 0x41, 0x64, 0x64, 0x41,
 	0x63, 0x74, 0x6f, 0x72, 0x73, 0x54, 0x6f, 0x54, 0x68, 0x65, 0x43, 0x61, 0x73, 0x74, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x07, 0x4d, 0x6f, 0x76, 0x69, 0x65, 0x49, 0x44,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69, 0x64,
-	0x12, 0x1d, 0x0a, 0x09, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x49, 0x44, 0x73, 0x18, 0x02, 0x20,
-	0x03, 0x28, 0x05, 0x52, 0x0a, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x5f, 0x69, 0x64, 0x73, 0x22,
-	0x5a, 0x0a, 0x1e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x46,
-	0x72, 0x6f, 0x6d, 0x54, 0x68, 0x65, 0x43, 0x61, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x12, 0x19, 0x0a, 0x07, 0x4d, 0x6f, 0x76, 0x69, 0x65, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x05, 0x52, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69, 0x64, 0x12, 0x1d, 0x0a, 0x09,
-	0x41, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x49, 0x44, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0a, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x5f, 0x69, 0x64, 0x73, 0x22, 0x2e, 0x0a, 0x11, 0x44,
-	0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x61, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x19, 0x0a, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x05, 0x52, 0x07, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x49, 0x64, 0x42, 0x1f, 0x5a, 0x1d, 0x61,
-	0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69,
-	0x63, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x12, 0x37, 0x0a, 0x06, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x1f, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f, 0x73,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x50, 0x61, 0x72, 0x61,
+	0x6d, 0x52, 0x06, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x22, 0x74, 0x0a, 0x1e, 0x52, 0x65, 0x6d,
+	0x6f, 0x76, 0x65, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x46, 0x72, 0x6f, 0x6d, 0x54, 0x68, 0x65,
+	0x43, 0x61, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x07, 0x4d,
+	0x6f, 0x76, 0x69, 0x65, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x6d, 0x6f,
+	0x76, 0x69, 0x65, 0x5f, 0x69, 0x64, 0x12, 0x37, 0x0a, 0x06, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x73,
+	0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63,
+	0x61, 0x73, 0x74, 0x73, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x41, 0x63, 0x74,
+	0x6f, 0x72, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x52, 0x06, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x22,
+	0x2e, 0x0a, 0x11, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x61, 0x73, 0x74, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x6d, 0x6f, 0x76, 0x69, 0x65, 0x49, 0x64, 0x42,
+	0x1f, 0x5a, 0x1d, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x74, 0x73, 0x5f, 0x73,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -714,29 +1262,44 @@ func file_admin_casts_service_v1_messages_proto_rawDescGZIP() []byte {
 	return file_admin_casts_service_v1_messages_proto_rawDescData
 }
 
-var file_admin_casts_service_v1_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_admin_casts_service_v1_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_admin_casts_service_v1_messages_proto_goTypes = []interface{}{
 	(*UserErrorMessage)(nil),               // 0: admin_casts_service.UserErrorMessage
 	(*GetCastsRequest)(nil),                // 1: admin_casts_service.GetCastsRequest
 	(*Casts)(nil),                          // 2: admin_casts_service.Casts
-	(*Cast)(nil),                           // 3: admin_casts_service.Cast
-	(*GetCastRequest)(nil),                 // 4: admin_casts_service.GetCastRequest
-	(*SearchCastByLabelRequest)(nil),       // 5: admin_casts_service.SearchCastByLabelRequest
-	(*CreateCastRequest)(nil),              // 6: admin_casts_service.CreateCastRequest
-	(*UpdateLabelForCastRequest)(nil),      // 7: admin_casts_service.UpdateLabelForCastRequest
-	(*AddActorsToTheCastRequest)(nil),      // 8: admin_casts_service.AddActorsToTheCastRequest
-	(*RemoveActorsFromTheCastRequest)(nil), // 9: admin_casts_service.RemoveActorsFromTheCastRequest
-	(*DeleteCastRequest)(nil),              // 10: admin_casts_service.DeleteCastRequest
-	nil,                                    // 11: admin_casts_service.Casts.CastsEntry
+	(*Profession)(nil),                     // 3: admin_casts_service.Profession
+	(*Actor)(nil),                          // 4: admin_casts_service.Actor
+	(*Cast)(nil),                           // 5: admin_casts_service.Cast
+	(*Professions)(nil),                    // 6: admin_casts_service.Professions
+	(*GetCastRequest)(nil),                 // 7: admin_casts_service.GetCastRequest
+	(*CreateProfessionRequest)(nil),        // 8: admin_casts_service.CreateProfessionRequest
+	(*CreateProfessionResponse)(nil),       // 9: admin_casts_service.CreateProfessionResponse
+	(*UpdateProfessionRequest)(nil),        // 10: admin_casts_service.UpdateProfessionRequest
+	(*DeleteProfessionRequest)(nil),        // 11: admin_casts_service.DeleteProfessionRequest
+	(*CastLabel)(nil),                      // 12: admin_casts_service.CastLabel
+	(*CastsLabels)(nil),                    // 13: admin_casts_service.CastsLabels
+	(*SearchCastByLabelRequest)(nil),       // 14: admin_casts_service.SearchCastByLabelRequest
+	(*ActorParam)(nil),                     // 15: admin_casts_service.ActorParam
+	(*CreateCastRequest)(nil),              // 16: admin_casts_service.CreateCastRequest
+	(*UpdateLabelForCastRequest)(nil),      // 17: admin_casts_service.UpdateLabelForCastRequest
+	(*AddActorsToTheCastRequest)(nil),      // 18: admin_casts_service.AddActorsToTheCastRequest
+	(*RemoveActorsFromTheCastRequest)(nil), // 19: admin_casts_service.RemoveActorsFromTheCastRequest
+	(*DeleteCastRequest)(nil),              // 20: admin_casts_service.DeleteCastRequest
 }
 var file_admin_casts_service_v1_messages_proto_depIdxs = []int32{
-	11, // 0: admin_casts_service.Casts.casts:type_name -> admin_casts_service.Casts.CastsEntry
-	3,  // 1: admin_casts_service.Casts.CastsEntry.value:type_name -> admin_casts_service.Cast
-	2,  // [2:2] is the sub-list for method output_type
-	2,  // [2:2] is the sub-list for method input_type
-	2,  // [2:2] is the sub-list for extension type_name
-	2,  // [2:2] is the sub-list for extension extendee
-	0,  // [0:2] is the sub-list for field type_name
+	5,  // 0: admin_casts_service.Casts.casts:type_name -> admin_casts_service.Cast
+	3,  // 1: admin_casts_service.Actor.profession:type_name -> admin_casts_service.Profession
+	4,  // 2: admin_casts_service.Cast.Actors:type_name -> admin_casts_service.Actor
+	3,  // 3: admin_casts_service.Professions.professions:type_name -> admin_casts_service.Profession
+	12, // 4: admin_casts_service.CastsLabels.casts:type_name -> admin_casts_service.CastLabel
+	15, // 5: admin_casts_service.CreateCastRequest.Actors:type_name -> admin_casts_service.ActorParam
+	15, // 6: admin_casts_service.AddActorsToTheCastRequest.Actors:type_name -> admin_casts_service.ActorParam
+	15, // 7: admin_casts_service.RemoveActorsFromTheCastRequest.Actors:type_name -> admin_casts_service.ActorParam
+	8,  // [8:8] is the sub-list for method output_type
+	8,  // [8:8] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_admin_casts_service_v1_messages_proto_init() }
@@ -782,7 +1345,7 @@ func file_admin_casts_service_v1_messages_proto_init() {
 			}
 		}
 		file_admin_casts_service_v1_messages_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Cast); i {
+			switch v := v.(*Profession); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -794,7 +1357,7 @@ func file_admin_casts_service_v1_messages_proto_init() {
 			}
 		}
 		file_admin_casts_service_v1_messages_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetCastRequest); i {
+			switch v := v.(*Actor); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -806,7 +1369,7 @@ func file_admin_casts_service_v1_messages_proto_init() {
 			}
 		}
 		file_admin_casts_service_v1_messages_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SearchCastByLabelRequest); i {
+			switch v := v.(*Cast); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -818,7 +1381,7 @@ func file_admin_casts_service_v1_messages_proto_init() {
 			}
 		}
 		file_admin_casts_service_v1_messages_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateCastRequest); i {
+			switch v := v.(*Professions); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -830,7 +1393,7 @@ func file_admin_casts_service_v1_messages_proto_init() {
 			}
 		}
 		file_admin_casts_service_v1_messages_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateLabelForCastRequest); i {
+			switch v := v.(*GetCastRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -842,7 +1405,7 @@ func file_admin_casts_service_v1_messages_proto_init() {
 			}
 		}
 		file_admin_casts_service_v1_messages_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddActorsToTheCastRequest); i {
+			switch v := v.(*CreateProfessionRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -854,7 +1417,7 @@ func file_admin_casts_service_v1_messages_proto_init() {
 			}
 		}
 		file_admin_casts_service_v1_messages_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RemoveActorsFromTheCastRequest); i {
+			switch v := v.(*CreateProfessionResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -866,6 +1429,126 @@ func file_admin_casts_service_v1_messages_proto_init() {
 			}
 		}
 		file_admin_casts_service_v1_messages_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateProfessionRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteProfessionRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CastLabel); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CastsLabels); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SearchCastByLabelRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ActorParam); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateCastRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateLabelForCastRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AddActorsToTheCastRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RemoveActorsFromTheCastRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_admin_casts_service_v1_messages_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DeleteCastRequest); i {
 			case 0:
 				return &v.state
@@ -884,7 +1567,7 @@ func file_admin_casts_service_v1_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_admin_casts_service_v1_messages_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

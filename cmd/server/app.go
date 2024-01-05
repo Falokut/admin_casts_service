@@ -82,7 +82,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
-		logger.Info("Running movie event  concumer")
+		logger.Info("Running movie event consumer")
 		movieEventsConsumer := events.NewMovieEventsConsumer(getKafkaReaderConfig(appCfg.KafkaMoviesEventsConfig),
 			logger.Logger, repo)
 		movieEventsConsumer.Run(ctx)
@@ -91,7 +91,7 @@ func main() {
 
 	wg.Add(1)
 	go func() {
-		logger.Info("Running person event  concumer")
+		logger.Info("Running person event consumer")
 		personEventsConsumer := events.NewPersonEventsConsumer(getKafkaReaderConfig(appCfg.KafkaMoviesEventsConfig),
 			logger.Logger, repo)
 		personEventsConsumer.Run(ctx)

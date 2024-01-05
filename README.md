@@ -6,7 +6,7 @@
         + [Jaeger config](#jaeger-config)
         + [Prometheus config](#prometheus-config)
         + [Kafka reader config](#kafka-reader-config)
-        + [time.Duration](#timeduration-yml-supported-values)
+        + [time.Duration](#timeduration-yaml-supported-values)
 + [Metrics](#metrics)
 + [Docs](#docs)
 + [Author](#author)

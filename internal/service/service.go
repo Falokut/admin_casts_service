@@ -38,14 +38,21 @@ func (s *castsService) GetCast(ctx context.Context, in *casts_service.GetCastReq
 	defer span.Finish()
 
 	cast, err := s.repo.GetCast(ctx, in.MovieId)
-	if errors.Is(err, repository.ErrNotFound) {
-		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrNotFound, "")
-	} else if err != nil {
+	if err != nil {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
+	} else if len(cast) == 0 {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrNotFound, "")
 	}
 
 	span.SetTag("grpc.status", codes.OK)
-	return convertCastToProto(cast), nil
+
+	var protoCast = &casts_service.Cast{MovieID: cast[0].ID, CastLabel: cast[0].Label}
+	for _, c := range cast {
+		protoCast.Actors = append(protoCast.Actors, &casts_service.Actor{ID: c.ActorID,
+			Profession: &casts_service.Profession{ID: c.ProfessionID, Name: c.ProfessionName}})
+	}
+
+	return protoCast, nil
 }
 
 func (s *castsService) GetCasts(ctx context.Context, in *casts_service.GetCastsRequest) (*casts_service.Casts, error) {
@@ -84,7 +91,7 @@ func (s *castsService) GetCasts(ctx context.Context, in *casts_service.GetCastsR
 }
 
 func (s *castsService) SearchCastByLabel(ctx context.Context,
-	in *casts_service.SearchCastByLabelRequest) (*casts_service.Casts, error) {
+	in *casts_service.SearchCastByLabelRequest) (*casts_service.CastsLabels, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.SearchCastByLabel")
 	defer span.Finish()
 
@@ -100,8 +107,17 @@ func (s *castsService) SearchCastByLabel(ctx context.Context,
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	}
 
+	proto := &casts_service.CastsLabels{}
+	proto.Casts = make([]*casts_service.CastLabel, len(casts))
+	for i, cast := range casts {
+		proto.Casts[i] = &casts_service.CastLabel{
+			MovieID:   cast.ID,
+			CastLabel: cast.Label,
+		}
+	}
+
 	span.SetTag("grpc.status", codes.OK)
-	return convertCastsToProto(casts), nil
+	return proto, nil
 }
 
 func (s *castsService) CreateCast(ctx context.Context, in *casts_service.CreateCastRequest) (*emptypb.Empty, error) {
@@ -116,7 +132,14 @@ func (s *castsService) CreateCast(ctx context.Context, in *casts_service.CreateC
 			fmt.Sprintf("cast is already exists check cast with id %d", id))
 	}
 
-	if err := s.repo.CreateCast(ctx, in.MovieID, in.CastLabel, in.ActorsIDs); err != nil {
+	var actors = make([]repository.Actor, len(in.Actors))
+	for i, actor := range in.Actors {
+		actors[i] = repository.Actor{
+			ID:           actor.Id,
+			ProfessionID: actor.ProfessionID,
+		}
+	}
+	if err := s.repo.CreateCast(ctx, in.MovieID, in.CastLabel, actors); err != nil {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	}
 
@@ -149,6 +172,9 @@ func (s *castsService) AddActorsToTheCast(ctx context.Context,
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.AddActorsToTheCast")
 	defer span.Finish()
 
+	if len(in.Actors) == 0 {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors can't be emtpy")
+	}
 	_, err := s.checkCastExisting(ctx, in.MovieID)
 	if err != nil {
 		ext.LogError(span, err)
@@ -156,7 +182,15 @@ func (s *castsService) AddActorsToTheCast(ctx context.Context,
 		return nil, err
 	}
 
-	if err := s.repo.AddActorsToTheCast(ctx, in.MovieID, in.ActorsIDs); err != nil {
+	var actors = make([]repository.Actor, len(in.Actors))
+	for i, actor := range in.Actors {
+		actors[i] = repository.Actor{
+			ID:           actor.Id,
+			ProfessionID: actor.ProfessionID,
+		}
+	}
+
+	if err := s.repo.AddActorsToTheCast(ctx, in.MovieID, actors); err != nil {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	}
 
@@ -169,6 +203,10 @@ func (s *castsService) RemoveActorsFromTheCast(ctx context.Context,
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.RemoveActorsFromTheCast")
 	defer span.Finish()
 
+	if len(in.Actors) == 0 {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors can't be emtpy")
+	}
+
 	_, err := s.checkCastExisting(ctx, in.MovieID)
 	if err != nil {
 		ext.LogError(span, err)
@@ -176,14 +214,15 @@ func (s *castsService) RemoveActorsFromTheCast(ctx context.Context,
 		return nil, err
 	}
 
-	ids, err := s.convertStringToSlice(in.ActorsIDs)
-	if err != nil {
-		ext.LogError(span, err)
-		span.SetTag("grpc.status", status.Code(err))
-		return nil, err
+	var actors = make([]repository.Actor, len(in.Actors))
+	for i, actor := range in.Actors {
+		actors[i] = repository.Actor{
+			ID:           actor.Id,
+			ProfessionID: actor.ProfessionID,
+		}
 	}
 
-	if err := s.repo.RemoveActorsFromCast(ctx, in.MovieID, ids); err != nil {
+	if err := s.repo.RemoveActorsFromCast(ctx, in.MovieID, actors); err != nil {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	}
 
@@ -242,29 +281,124 @@ func (s *castsService) checkCastExisting(ctx context.Context, id int32) (int32, 
 }
 
 func convertCastsToProto(casts []repository.Cast) *casts_service.Casts {
-	proto := &casts_service.Casts{}
-	proto.Casts = make(map[int32]*casts_service.Cast, len(casts))
+	type CastInfo struct {
+		Actors    []*casts_service.Actor
+		CastLabel string
+	}
+
+	var protoActorsByCast = make(map[int32]CastInfo)
 
 	for _, cast := range casts {
-		proto.Casts[cast.ID] = convertCastToProto(cast)
+		castInfo, ok := protoActorsByCast[cast.ID]
+		if !ok {
+			castInfo = CastInfo{
+				CastLabel: cast.Label}
+			castInfo.Actors = make([]*casts_service.Actor, 0, 6)
+		}
+		castInfo.Actors = append(castInfo.Actors, &casts_service.Actor{ID: cast.ActorID,
+			Profession: &casts_service.Profession{ID: cast.ProfessionID, Name: cast.ProfessionName}})
+		protoActorsByCast[cast.ID] = castInfo
+	}
+	proto := &casts_service.Casts{}
+	proto.Casts = make([]*casts_service.Cast, 0, len(casts))
+	for castID, info := range protoActorsByCast {
+		proto.Casts = append(proto.Casts, &casts_service.Cast{
+			MovieID:   castID,
+			CastLabel: info.CastLabel,
+			Actors:    info.Actors,
+		})
 	}
 
 	return proto
 }
 
-func convertCastToProto(cast repository.Cast) *casts_service.Cast {
-	actorsIDs := strings.Split(cast.Actors, ",")
-	var Actors = make([]int32, 0, len(actorsIDs))
-	for _, id := range actorsIDs {
-		actorID, err := strconv.Atoi(id)
-		if err != nil {
-			continue
-		}
-		Actors = append(Actors, int32(actorID))
+func (s *castsService) GetProfessions(ctx context.Context,
+	in *emptypb.Empty) (*casts_service.Professions, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.GetProfessions")
+	defer span.Finish()
+
+	professions, err := s.repo.GetAllProfessions(ctx)
+	if err != nil {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	}
-	return &casts_service.Cast{
-		MovieID:   cast.ID,
-		CastLabel: cast.Label,
-		ActorsIDs: Actors,
+	if len(professions) == 0 {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrNotFound, "professions not found, table might be empty")
 	}
+
+	var protoProfessions = &casts_service.Professions{}
+	protoProfessions.Professions = make([]*casts_service.Profession, len(professions))
+	for i, profession := range professions {
+		protoProfessions.Professions[i] = &casts_service.Profession{ID: profession.ID, Name: profession.Name}
+	}
+
+	span.SetTag("grpc.status", codes.OK)
+	return protoProfessions, nil
+}
+
+func (s *castsService) CreateProfession(ctx context.Context,
+	in *casts_service.CreateProfessionRequest) (*casts_service.CreateProfessionResponse, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.CreateProfession")
+	defer span.Finish()
+
+	exist, id, err := s.repo.IsProfessionWithNameExists(ctx, in.Name)
+	if err != nil {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
+	}
+	if exist {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrAlreadyExists, fmt.Sprintf("profession already exists, check profession with id %d", id))
+	}
+
+	id, err = s.repo.CreateProfession(ctx, in.Name)
+	if err != nil {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
+	}
+
+	span.SetTag("grpc.status", codes.OK)
+	return &casts_service.CreateProfessionResponse{Id: id}, nil
+}
+
+func (s *castsService) DeleteProfession(ctx context.Context,
+	in *casts_service.DeleteProfessionRequest) (*emptypb.Empty, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.DeleteProfession")
+	defer span.Finish()
+
+	err := s.repo.DeleteProfession(ctx, in.Id)
+	if errors.Is(err, repository.ErrNotFound) {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrNotFound, "")
+	} else if err != nil {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
+	}
+
+	span.SetTag("grpc.status", codes.OK)
+	return &emptypb.Empty{}, nil
+}
+
+func (s *castsService) UpdateProfession(ctx context.Context,
+	in *casts_service.UpdateProfessionRequest) (*emptypb.Empty, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.UpdateProfession")
+	defer span.Finish()
+
+	exist, id, err := s.repo.IsProfessionWithNameExists(ctx, in.Name)
+	if err != nil {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
+	}
+	if exist {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrAlreadyExists, fmt.Sprintf("profession already exists, check profession with id %d", id))
+	}
+
+	exist, err = s.repo.IsProfessionExists(ctx, in.ID)
+	if err != nil {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
+	}
+	if !exist {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrNotFound, "profession not found")
+	}
+
+	err = s.repo.UpdateProfession(ctx, in.ID, in.Name)
+	if err != nil {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
+	}
+
+	span.SetTag("grpc.status", codes.OK)
+	return &emptypb.Empty{}, nil
 }

@@ -18,19 +18,55 @@ message GetCastsRequest{
 
 
 message Casts {
-  map<int32, Cast> casts = 1;
+  repeated Cast casts = 1;
+}
+
+message Profession {
+  int32 ID = 1[json_name="id"];
+  string name = 2;
+}
+
+message Actor {
+  int32 ID = 1[json_name="id"];
+  Profession profession = 2;
 }
 
 message Cast {
-  string CastLabel = 1[json_name="cast_label"];
-  int32 MovieID = 2[json_name="movie_id"];
-  repeated int32 ActorsIDs = 3[json_name="actors_ids"];
+  int32 MovieID = 1[json_name="movie_id"];
+  string CastLabel = 2[json_name="cast_label"];
+  repeated Actor Actors = 3[json_name="actors"];
+}
+
+message Professions {
+  repeated Profession professions = 1;
 }
 
 message GetCastRequest {
   int32 movie_id = 1;
 }
+message CreateProfessionRequest {
+  string name = 1;
+}
+message CreateProfessionResponse {
+  int32 id = 1;
+}
+message UpdateProfessionRequest {
+  int32 ID = 1[json_name="id"];
+  string name = 2;
+}
 
+message DeleteProfessionRequest {
+  int32 id = 1;
+}
+
+message CastLabel {
+  int32 MovieID = 1[json_name="movie_id"];
+  string CastLabel = 2[json_name="cast_label"];
+}
+
+message CastsLabels {
+  repeated CastLabel casts = 1;
+}
 message SearchCastByLabelRequest {
   string label = 1;
   // must be in range 10-100
@@ -40,10 +76,16 @@ message SearchCastByLabelRequest {
   int32 page = 3;
 }
 
+
+message ActorParam  {
+  int32 id = 1;
+  int32 professionID = 2[json_name="profession_id"];
+}
+
 message CreateCastRequest {
   string CastLabel = 1[json_name="cast_label"];
   int32 MovieID = 2[json_name="movie_id"];
-  repeated int32 ActorsIDs = 3[json_name="actors_ids"];
+  repeated ActorParam Actors = 3[json_name="actors"];
 }
 
 message UpdateLabelForCastRequest {
@@ -53,14 +95,13 @@ message UpdateLabelForCastRequest {
 
 message AddActorsToTheCastRequest {
   int32 MovieID = 1[json_name="movie_id"];
-  repeated int32 ActorsIDs = 2[json_name="actors_ids"];
+  repeated ActorParam Actors = 2[json_name="actors"];
 }
 
 
 message RemoveActorsFromTheCastRequest {
   int32 MovieID = 1[json_name="movie_id"];
-   // use ',' as separator for multiple ids
-  string ActorsIDs = 2[json_name="actors_ids"];
+  repeated ActorParam Actors = 3[json_name="actors"];
 }
 
 message DeleteCastRequest {

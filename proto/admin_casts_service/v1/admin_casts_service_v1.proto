@@ -53,7 +53,7 @@ service castsServiceV1 {
     };
   }
 
-  rpc SearchCastByLabel(SearchCastByLabelRequest)returns(Casts){
+  rpc SearchCastByLabel(SearchCastByLabelRequest)returns(CastsLabels){
     option (google.api.http) = {
       get: "/v1/cast/search"
     };
@@ -88,7 +88,8 @@ service castsServiceV1 {
 
   rpc RemoveActorsFromTheCast(RemoveActorsFromTheCastRequest)returns(google.protobuf.Empty){
     option (google.api.http) = {
-      delete: "/v1/cast/actors"
+      post: "/v1/cast/actors/delete"
+      body: "*"
     };
   }
 
@@ -96,5 +97,31 @@ service castsServiceV1 {
     option (google.api.http) = {
       delete: "/v1/cast/{movie_id}"
     };
+  }
+
+  rpc GetProfessions(google.protobuf.Empty) returns(Professions) {
+		option (google.api.http) = {
+			get:"/v1/cast/professions"
+		};
+	}
+  
+  rpc CreateProfession(CreateProfessionRequest) returns(CreateProfessionResponse) {
+    option (google.api.http) = {
+			post:"/v1/cast/professions"
+      body:"*"
+		};
+  }
+  
+  rpc UpdateProfession(UpdateProfessionRequest) returns(google.protobuf.Empty) {
+    option (google.api.http) = {
+			post:"/v1/cast/professions/update"
+      body:"*"
+		};
+  }
+
+  rpc DeleteProfession(DeleteProfessionRequest) returns(google.protobuf.Empty) {
+    option (google.api.http) = {
+			delete:"/v1/cast/professions"
+		};
   }
 }
