@@ -79,16 +79,16 @@ service castsServiceV1 {
     };
   }
 
-  rpc AddActorsToTheCast(AddActorsToTheCastRequest)returns(google.protobuf.Empty){
+  rpc AddPersonsToTheCast(AddPersonsToTheCastRequest)returns(google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/cast/actors"
+      post: "/v1/cast/persons"
       body: "*"
     };
   }
 
-  rpc RemoveActorsFromTheCast(RemoveActorsFromTheCastRequest)returns(google.protobuf.Empty){
+  rpc RemovePersonsFromTheCast(RemovePersonsFromTheCastRequest)returns(google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/cast/actors/delete"
+      post: "/v1/cast/persons/delete"
       body: "*"
     };
   }

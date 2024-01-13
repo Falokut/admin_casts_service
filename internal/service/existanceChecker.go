@@ -105,16 +105,12 @@ func convertIntSliceIntoString(nums []int32) string {
 	return strings.Join(str, ",")
 }
 
-func (c *existanceChecker) CheckPersons(ctx context.Context, persons []*casts_service.ActorParam) error {
+func (c *existanceChecker) CheckPersons(ctx context.Context, persons []*casts_service.PersonParam) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "existanceChecker.CheckPersons")
 	defer span.Finish()
 
 	var ids = make([]int32, 0, len(persons))
 	for _, person := range persons {
-		if person == nil {
-			continue
-		}
-
 		ids = append(ids, person.Id)
 	}
 
@@ -135,7 +131,7 @@ func (c *existanceChecker) CheckPersons(ctx context.Context, persons []*casts_se
 }
 
 func (c *existanceChecker) CheckMovie(ctx context.Context, id int32) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "existanceChecker.CheckPersons")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "existanceChecker.CheckMovie")
 	defer span.Finish()
 
 	select {
@@ -154,7 +150,7 @@ func (c *existanceChecker) CheckMovie(ctx context.Context, id int32) error {
 	return nil
 }
 
-func (c *existanceChecker) CheckExistance(ctx context.Context, persons []*casts_service.ActorParam, movieID int32) error {
+func (c *existanceChecker) CheckExistance(ctx context.Context, persons []*casts_service.PersonParam, movieID int32) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "existanceChecker.CheckExistance")
 	defer span.Finish()
 

@@ -28,8 +28,8 @@ type CastsServiceV1Client interface {
 	GetCasts(ctx context.Context, in *GetCastsRequest, opts ...grpc.CallOption) (*Casts, error)
 	CreateCast(ctx context.Context, in *CreateCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateLabelForCast(ctx context.Context, in *UpdateLabelForCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	AddActorsToTheCast(ctx context.Context, in *AddActorsToTheCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	RemoveActorsFromTheCast(ctx context.Context, in *RemoveActorsFromTheCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	AddPersonsToTheCast(ctx context.Context, in *AddPersonsToTheCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	RemovePersonsFromTheCast(ctx context.Context, in *RemovePersonsFromTheCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteCast(ctx context.Context, in *DeleteCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetProfessions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Professions, error)
 	CreateProfession(ctx context.Context, in *CreateProfessionRequest, opts ...grpc.CallOption) (*CreateProfessionResponse, error)
@@ -90,18 +90,18 @@ func (c *castsServiceV1Client) UpdateLabelForCast(ctx context.Context, in *Updat
 	return out, nil
 }
 
-func (c *castsServiceV1Client) AddActorsToTheCast(ctx context.Context, in *AddActorsToTheCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *castsServiceV1Client) AddPersonsToTheCast(ctx context.Context, in *AddPersonsToTheCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/admin_casts_service.castsServiceV1/AddActorsToTheCast", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/admin_casts_service.castsServiceV1/AddPersonsToTheCast", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *castsServiceV1Client) RemoveActorsFromTheCast(ctx context.Context, in *RemoveActorsFromTheCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *castsServiceV1Client) RemovePersonsFromTheCast(ctx context.Context, in *RemovePersonsFromTheCastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/admin_casts_service.castsServiceV1/RemoveActorsFromTheCast", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/admin_casts_service.castsServiceV1/RemovePersonsFromTheCast", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -162,8 +162,8 @@ type CastsServiceV1Server interface {
 	GetCasts(context.Context, *GetCastsRequest) (*Casts, error)
 	CreateCast(context.Context, *CreateCastRequest) (*emptypb.Empty, error)
 	UpdateLabelForCast(context.Context, *UpdateLabelForCastRequest) (*emptypb.Empty, error)
-	AddActorsToTheCast(context.Context, *AddActorsToTheCastRequest) (*emptypb.Empty, error)
-	RemoveActorsFromTheCast(context.Context, *RemoveActorsFromTheCastRequest) (*emptypb.Empty, error)
+	AddPersonsToTheCast(context.Context, *AddPersonsToTheCastRequest) (*emptypb.Empty, error)
+	RemovePersonsFromTheCast(context.Context, *RemovePersonsFromTheCastRequest) (*emptypb.Empty, error)
 	DeleteCast(context.Context, *DeleteCastRequest) (*emptypb.Empty, error)
 	GetProfessions(context.Context, *emptypb.Empty) (*Professions, error)
 	CreateProfession(context.Context, *CreateProfessionRequest) (*CreateProfessionResponse, error)
@@ -191,11 +191,11 @@ func (UnimplementedCastsServiceV1Server) CreateCast(context.Context, *CreateCast
 func (UnimplementedCastsServiceV1Server) UpdateLabelForCast(context.Context, *UpdateLabelForCastRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateLabelForCast not implemented")
 }
-func (UnimplementedCastsServiceV1Server) AddActorsToTheCast(context.Context, *AddActorsToTheCastRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddActorsToTheCast not implemented")
+func (UnimplementedCastsServiceV1Server) AddPersonsToTheCast(context.Context, *AddPersonsToTheCastRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddPersonsToTheCast not implemented")
 }
-func (UnimplementedCastsServiceV1Server) RemoveActorsFromTheCast(context.Context, *RemoveActorsFromTheCastRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveActorsFromTheCast not implemented")
+func (UnimplementedCastsServiceV1Server) RemovePersonsFromTheCast(context.Context, *RemovePersonsFromTheCastRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemovePersonsFromTheCast not implemented")
 }
 func (UnimplementedCastsServiceV1Server) DeleteCast(context.Context, *DeleteCastRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCast not implemented")
@@ -315,38 +315,38 @@ func _CastsServiceV1_UpdateLabelForCast_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CastsServiceV1_AddActorsToTheCast_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddActorsToTheCastRequest)
+func _CastsServiceV1_AddPersonsToTheCast_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddPersonsToTheCastRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CastsServiceV1Server).AddActorsToTheCast(ctx, in)
+		return srv.(CastsServiceV1Server).AddPersonsToTheCast(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/admin_casts_service.castsServiceV1/AddActorsToTheCast",
+		FullMethod: "/admin_casts_service.castsServiceV1/AddPersonsToTheCast",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CastsServiceV1Server).AddActorsToTheCast(ctx, req.(*AddActorsToTheCastRequest))
+		return srv.(CastsServiceV1Server).AddPersonsToTheCast(ctx, req.(*AddPersonsToTheCastRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CastsServiceV1_RemoveActorsFromTheCast_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemoveActorsFromTheCastRequest)
+func _CastsServiceV1_RemovePersonsFromTheCast_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemovePersonsFromTheCastRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CastsServiceV1Server).RemoveActorsFromTheCast(ctx, in)
+		return srv.(CastsServiceV1Server).RemovePersonsFromTheCast(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/admin_casts_service.castsServiceV1/RemoveActorsFromTheCast",
+		FullMethod: "/admin_casts_service.castsServiceV1/RemovePersonsFromTheCast",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CastsServiceV1Server).RemoveActorsFromTheCast(ctx, req.(*RemoveActorsFromTheCastRequest))
+		return srv.(CastsServiceV1Server).RemovePersonsFromTheCast(ctx, req.(*RemovePersonsFromTheCastRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -469,12 +469,12 @@ var CastsServiceV1_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CastsServiceV1_UpdateLabelForCast_Handler,
 		},
 		{
-			MethodName: "AddActorsToTheCast",
-			Handler:    _CastsServiceV1_AddActorsToTheCast_Handler,
+			MethodName: "AddPersonsToTheCast",
+			Handler:    _CastsServiceV1_AddPersonsToTheCast_Handler,
 		},
 		{
-			MethodName: "RemoveActorsFromTheCast",
-			Handler:    _CastsServiceV1_RemoveActorsFromTheCast_Handler,
+			MethodName: "RemovePersonsFromTheCast",
+			Handler:    _CastsServiceV1_RemovePersonsFromTheCast_Handler,
 		},
 		{
 			MethodName: "DeleteCast",

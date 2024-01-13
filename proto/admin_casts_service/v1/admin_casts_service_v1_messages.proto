@@ -26,7 +26,7 @@ message Profession {
   string name = 2;
 }
 
-message Actor {
+message Person {
   int32 ID = 1[json_name="id"];
   Profession profession = 2;
 }
@@ -34,7 +34,7 @@ message Actor {
 message Cast {
   int32 MovieID = 1[json_name="movie_id"];
   string CastLabel = 2[json_name="cast_label"];
-  repeated Actor Actors = 3[json_name="actors"];
+  repeated Person Persons = 3[json_name="persons"];
 }
 
 message Professions {
@@ -77,7 +77,7 @@ message SearchCastByLabelRequest {
 }
 
 
-message ActorParam  {
+message PersonParam  {
   int32 id = 1;
   int32 professionID = 2[json_name="profession_id"];
 }
@@ -85,7 +85,7 @@ message ActorParam  {
 message CreateCastRequest {
   string CastLabel = 1[json_name="cast_label"];
   int32 MovieID = 2[json_name="movie_id"];
-  repeated ActorParam Actors = 3[json_name="actors"];
+  repeated PersonParam Persons = 3[json_name="persons"];
 }
 
 message UpdateLabelForCastRequest {
@@ -93,15 +93,15 @@ message UpdateLabelForCastRequest {
   int32 MovieID = 2[json_name="movie_id"]; 
 }
 
-message AddActorsToTheCastRequest {
+message AddPersonsToTheCastRequest {
   int32 MovieID = 1[json_name="movie_id"];
-  repeated ActorParam Actors = 2[json_name="actors"];
+  repeated PersonParam Persons = 2[json_name="persons"];
 }
 
 
-message RemoveActorsFromTheCastRequest {
+message RemovePersonsFromTheCastRequest {
   int32 MovieID = 1[json_name="movie_id"];
-  repeated ActorParam Actors = 3[json_name="actors"];
+  repeated PersonParam Persons = 3[json_name="persons"];
 }
 
 message DeleteCastRequest {

@@ -126,96 +126,6 @@
         ]
       }
     },
-    "/v1/cast/actors": {
-      "post": {
-        "operationId": "castsServiceV1_AddActorsToTheCast",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "404": {
-            "description": "Returned when the resource does not exist.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          },
-          "500": {
-            "description": "Something went wrong.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/admin_casts_serviceAddActorsToTheCastRequest"
-            }
-          }
-        ],
-        "tags": [
-          "castsServiceV1"
-        ]
-      }
-    },
-    "/v1/cast/actors/delete": {
-      "post": {
-        "operationId": "castsServiceV1_RemoveActorsFromTheCast",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "404": {
-            "description": "Returned when the resource does not exist.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          },
-          "500": {
-            "description": "Something went wrong.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/admin_casts_serviceRemoveActorsFromTheCastRequest"
-            }
-          }
-        ],
-        "tags": [
-          "castsServiceV1"
-        ]
-      }
-    },
     "/v1/cast/label": {
       "post": {
         "operationId": "castsServiceV1_UpdateLabelForCast",
@@ -253,6 +163,96 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/admin_casts_serviceUpdateLabelForCastRequest"
+            }
+          }
+        ],
+        "tags": [
+          "castsServiceV1"
+        ]
+      }
+    },
+    "/v1/cast/persons": {
+      "post": {
+        "operationId": "castsServiceV1_AddPersonsToTheCast",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "500": {
+            "description": "Something went wrong.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/admin_casts_serviceAddPersonsToTheCastRequest"
+            }
+          }
+        ],
+        "tags": [
+          "castsServiceV1"
+        ]
+      }
+    },
+    "/v1/cast/persons/delete": {
+      "post": {
+        "operationId": "castsServiceV1_RemovePersonsFromTheCast",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "500": {
+            "description": "Something went wrong.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/admin_casts_serviceRemovePersonsFromTheCastRequest"
             }
           }
         ],
@@ -569,43 +569,18 @@
     }
   },
   "definitions": {
-    "admin_casts_serviceActor": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "profession": {
-          "$ref": "#/definitions/admin_casts_serviceProfession"
-        }
-      }
-    },
-    "admin_casts_serviceActorParam": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "profession_id": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "admin_casts_serviceAddActorsToTheCastRequest": {
+    "admin_casts_serviceAddPersonsToTheCastRequest": {
       "type": "object",
       "properties": {
         "movie_id": {
           "type": "integer",
           "format": "int32"
         },
-        "actors": {
+        "persons": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/admin_casts_serviceActorParam"
+            "$ref": "#/definitions/admin_casts_servicePersonParam"
           }
         }
       }
@@ -620,11 +595,11 @@
         "cast_label": {
           "type": "string"
         },
-        "actors": {
+        "persons": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/admin_casts_serviceActor"
+            "$ref": "#/definitions/admin_casts_servicePerson"
           }
         }
       }
@@ -675,11 +650,11 @@
           "type": "integer",
           "format": "int32"
         },
-        "actors": {
+        "persons": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/admin_casts_serviceActorParam"
+            "$ref": "#/definitions/admin_casts_servicePersonParam"
           }
         }
       }
@@ -696,6 +671,31 @@
       "type": "object",
       "properties": {
         "id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "admin_casts_servicePerson": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "profession": {
+          "$ref": "#/definitions/admin_casts_serviceProfession"
+        }
+      }
+    },
+    "admin_casts_servicePersonParam": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "profession_id": {
           "type": "integer",
           "format": "int32"
         }
@@ -725,18 +725,18 @@
         }
       }
     },
-    "admin_casts_serviceRemoveActorsFromTheCastRequest": {
+    "admin_casts_serviceRemovePersonsFromTheCastRequest": {
       "type": "object",
       "properties": {
         "movie_id": {
           "type": "integer",
           "format": "int32"
         },
-        "actors": {
+        "persons": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/admin_casts_serviceActorParam"
+            "$ref": "#/definitions/admin_casts_servicePersonParam"
           }
         }
       }

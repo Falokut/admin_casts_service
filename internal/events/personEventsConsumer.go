@@ -80,5 +80,5 @@ func (c *personEventsConsumer) ConcumeDeletedEvent(ctx context.Context, msg kafk
 	if err != nil {
 		return err
 	}
-	return c.repo.RemoveActorFromCasts(ctx, event.ID)
+	return c.repo.RemovePersonFromCasts(ctx, event.ID)
 }

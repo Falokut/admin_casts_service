@@ -18,8 +18,8 @@ import (
 )
 
 type ExistanceChecker interface {
-	CheckPersons(ctx context.Context, persons []*casts_service.ActorParam) error
-	CheckExistance(ctx context.Context, persons []*casts_service.ActorParam, movieID int32) error
+	CheckPersons(ctx context.Context, persons []*casts_service.PersonParam) error
+	CheckExistance(ctx context.Context, persons []*casts_service.PersonParam, movieID int32) error
 }
 
 type castsService struct {
@@ -55,7 +55,7 @@ func (s *castsService) GetCast(ctx context.Context, in *casts_service.GetCastReq
 
 	var protoCast = &casts_service.Cast{MovieID: cast[0].ID, CastLabel: cast[0].Label}
 	for _, c := range cast {
-		protoCast.Actors = append(protoCast.Actors, &casts_service.Actor{ID: c.ActorID,
+		protoCast.Persons = append(protoCast.Persons, &casts_service.Person{ID: c.PersonID,
 			Profession: &casts_service.Profession{ID: c.ProfessionID, Name: c.ProfessionName}})
 	}
 
@@ -131,8 +131,8 @@ func (s *castsService) CreateCast(ctx context.Context, in *casts_service.CreateC
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.CreateCast")
 	defer span.Finish()
 
-	if len(in.Actors) == 0 {
-		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors musn't be empty")
+	if len(in.Persons) == 0 {
+		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "persons musn't be empty")
 	}
 	exist, id, err := s.repo.IsCastExist(ctx, in.MovieID)
 	if err != nil {
@@ -142,16 +142,16 @@ func (s *castsService) CreateCast(ctx context.Context, in *casts_service.CreateC
 			fmt.Sprintf("cast is already exists check cast with id %d", id))
 	}
 
-	err = s.checker.CheckExistance(ctx, in.Actors, in.MovieID)
+	err = s.checker.CheckExistance(ctx, in.Persons, in.MovieID)
 	if err != nil {
 		ext.LogError(span, err)
 		span.SetTag("grpc.status", status.Code(err))
 		return nil, err
 	}
 
-	var actors = make([]repository.Actor, len(in.Actors))
-	for i, actor := range in.Actors {
-		actors[i] = repository.Actor{
+	var actors = make([]repository.Person, len(in.Persons))
+	for i, actor := range in.Persons {
+		actors[i] = repository.Person{
 			ID:           actor.Id,
 			ProfessionID: actor.ProfessionID,
 		}
@@ -184,12 +184,12 @@ func (s *castsService) UpdateLabelForCast(ctx context.Context,
 	return &emptypb.Empty{}, nil
 }
 
-func (s *castsService) AddActorsToTheCast(ctx context.Context,
-	in *casts_service.AddActorsToTheCastRequest) (*emptypb.Empty, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.AddActorsToTheCast")
+func (s *castsService) AddPersonsToTheCast(ctx context.Context,
+	in *casts_service.AddPersonsToTheCastRequest) (*emptypb.Empty, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.AddPersonsToTheCast")
 	defer span.Finish()
 
-	if len(in.Actors) == 0 {
+	if len(in.Persons) == 0 {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors mustn't be emtpy")
 	}
 	_, err := s.checkCastExisting(ctx, in.MovieID)
@@ -199,22 +199,22 @@ func (s *castsService) AddActorsToTheCast(ctx context.Context,
 		return nil, err
 	}
 
-	err = s.checker.CheckPersons(ctx, in.Actors)
+	err = s.checker.CheckPersons(ctx, in.Persons)
 	if err != nil {
 		ext.LogError(span, err)
 		span.SetTag("grpc.status", status.Code(err))
 		return nil, err
 	}
 
-	var actors = make([]repository.Actor, len(in.Actors))
-	for i, actor := range in.Actors {
-		actors[i] = repository.Actor{
+	var actors = make([]repository.Person, len(in.Persons))
+	for i, actor := range in.Persons {
+		actors[i] = repository.Person{
 			ID:           actor.Id,
 			ProfessionID: actor.ProfessionID,
 		}
 	}
 
-	if err := s.repo.AddActorsToTheCast(ctx, in.MovieID, actors); err != nil {
+	if err := s.repo.AddPersonsToTheCast(ctx, in.MovieID, actors); err != nil {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	}
 
@@ -222,12 +222,12 @@ func (s *castsService) AddActorsToTheCast(ctx context.Context,
 	return &emptypb.Empty{}, nil
 }
 
-func (s *castsService) RemoveActorsFromTheCast(ctx context.Context,
-	in *casts_service.RemoveActorsFromTheCastRequest) (*emptypb.Empty, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.RemoveActorsFromTheCast")
+func (s *castsService) RemovePersonsFromTheCast(ctx context.Context,
+	in *casts_service.RemovePersonsFromTheCastRequest) (*emptypb.Empty, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsService.RemovePersonsFromTheCast")
 	defer span.Finish()
 
-	if len(in.Actors) == 0 {
+	if len(in.Persons) == 0 {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInvalidArgument, "actors musn't be empty")
 	}
 
@@ -238,15 +238,15 @@ func (s *castsService) RemoveActorsFromTheCast(ctx context.Context,
 		return nil, err
 	}
 
-	var actors = make([]repository.Actor, len(in.Actors))
-	for i, actor := range in.Actors {
-		actors[i] = repository.Actor{
+	var actors = make([]repository.Person, len(in.Persons))
+	for i, actor := range in.Persons {
+		actors[i] = repository.Person{
 			ID:           actor.Id,
 			ProfessionID: actor.ProfessionID,
 		}
 	}
 
-	if err := s.repo.RemoveActorsFromCast(ctx, in.MovieID, actors); err != nil {
+	if err := s.repo.RemovePersonsFromCast(ctx, in.MovieID, actors); err != nil {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	}
 
@@ -306,30 +306,30 @@ func (s *castsService) checkCastExisting(ctx context.Context, id int32) (int32, 
 
 func convertCastsToProto(casts []repository.Cast) *casts_service.Casts {
 	type CastInfo struct {
-		Actors    []*casts_service.Actor
+		Persons    []*casts_service.Person
 		CastLabel string
 	}
 
-	var protoActorsByCast = make(map[int32]CastInfo)
+	var protoPersonsByCast = make(map[int32]CastInfo)
 
 	for _, cast := range casts {
-		castInfo, ok := protoActorsByCast[cast.ID]
+		castInfo, ok := protoPersonsByCast[cast.ID]
 		if !ok {
 			castInfo = CastInfo{
 				CastLabel: cast.Label}
-			castInfo.Actors = make([]*casts_service.Actor, 0, 6)
+			castInfo.Persons = make([]*casts_service.Person, 0, 6)
 		}
-		castInfo.Actors = append(castInfo.Actors, &casts_service.Actor{ID: cast.ActorID,
+		castInfo.Persons = append(castInfo.Persons, &casts_service.Person{ID: cast.PersonID,
 			Profession: &casts_service.Profession{ID: cast.ProfessionID, Name: cast.ProfessionName}})
-		protoActorsByCast[cast.ID] = castInfo
+		protoPersonsByCast[cast.ID] = castInfo
 	}
 	proto := &casts_service.Casts{}
 	proto.Casts = make([]*casts_service.Cast, 0, len(casts))
-	for castID, info := range protoActorsByCast {
+	for castID, info := range protoPersonsByCast {
 		proto.Casts = append(proto.Casts, &casts_service.Cast{
 			MovieID:   castID,
 			CastLabel: info.CastLabel,
-			Actors:    info.Actors,
+			Persons:    info.Persons,
 		})
 	}
 

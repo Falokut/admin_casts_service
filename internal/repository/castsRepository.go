@@ -53,7 +53,7 @@ func (r *castsRepository) GetCast(ctx context.Context, id int32) ([]Cast, error)
 	defer span.SetTag("error", err != nil && errors.Is(err, sql.ErrNoRows))
 
 	query := fmt.Sprintf("SELECT %[1]s.movie_id, COALESCE(label,'') AS label,"+
-		"actor_id, COALESCE(%[3]s.name,'') AS profession_name,COALESCE(%[3]s.id,-1) AS profession_id "+
+		"person_id, COALESCE(%[3]s.name,'') AS profession_name,COALESCE(%[3]s.id,-1) AS profession_id "+
 		"FROM %[1]s LEFT JOIN %[2]s "+
 		"ON %[1]s.movie_id=%[2]s.movie_id LEFT JOIN %[3]s ON profession_id=%[3]s.id "+
 		"WHERE %[1]s.movie_id=$1",
@@ -79,7 +79,7 @@ func (r *castsRepository) GetAllCasts(ctx context.Context, limit, offset int32) 
 	defer span.SetTag("error", err != nil)
 
 	query := fmt.Sprintf("SELECT %[1]s.movie_id, COALESCE(label,'') AS label,"+
-		"actor_id, COALESCE(%[3]s.name,'') AS profession_name,COALESCE(%[3]s.id,-1) AS profession_id "+
+		"person_id, COALESCE(%[3]s.name,'') AS profession_name,COALESCE(%[3]s.id,-1) AS profession_id "+
 		"FROM %[1]s LEFT JOIN %[2]s "+
 		"ON %[1]s.movie_id=%[2]s.movie_id LEFT JOIN %[3]s ON profession_id=%[3]s.id "+
 		"LIMIT %[4]d OFFSET %[5]d;",
@@ -105,7 +105,7 @@ func (r *castsRepository) GetCasts(ctx context.Context, ids []int32, limit, offs
 	defer span.SetTag("error", err != nil)
 
 	query := fmt.Sprintf("SELECT %[1]s.movie_id, COALESCE(label,'') AS label,"+
-		"actor_id, COALESCE(%[3]s.name,'') AS profession_name,COALESCE(%[3]s.id,-1) AS profession_id "+
+		"person_id, COALESCE(%[3]s.name,'') AS profession_name,COALESCE(%[3]s.id,-1) AS profession_id "+
 		"FROM %[1]s LEFT JOIN %[2]s "+
 		"ON %[1]s.movie_id=%[2]s.movie_id LEFT JOIN %[3]s ON profession_id=%[3]s.id "+
 		"WHERE %[1]s.movie_id=ANY($1) "+
@@ -168,7 +168,7 @@ func (r *castsRepository) IsCastExist(ctx context.Context, id int32) (bool, int3
 	return true, foundedID, nil
 }
 
-func (r *castsRepository) CreateCast(ctx context.Context, id int32, label string, actors []Actor) error {
+func (r *castsRepository) CreateCast(ctx context.Context, id int32, label string, persons []Person) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.CreateCast")
 	defer span.Finish()
 	var err error
@@ -179,12 +179,12 @@ func (r *castsRepository) CreateCast(ctx context.Context, id int32, label string
 		return err
 	}
 
-	values := make([]string, 0, len(actors))
-	for _, actor := range actors {
-		values = append(values, fmt.Sprintf("(%d,%d,%d)", id, actor.ID, actor.ProfessionID))
+	values := make([]string, 0, len(persons))
+	for _, person := range persons {
+		values = append(values, fmt.Sprintf("(%d,%d,%d)", id, person.ID, person.ProfessionID))
 	}
 
-	query := fmt.Sprintf("INSERT INTO %s (movie_id,actor_id,profession_id) VALUES %s ON CONFLICT DO NOTHING;", castsTableName,
+	query := fmt.Sprintf("INSERT INTO %s (movie_id,person_id,profession_id) VALUES %s ON CONFLICT DO NOTHING;", castsTableName,
 		strings.Join(values, ","))
 	_, err = tx.ExecContext(ctx, query)
 	if err != nil {
@@ -234,16 +234,16 @@ func (r *castsRepository) DeleteCast(ctx context.Context, id int32) error {
 	return tx.Commit()
 }
 
-func (r *castsRepository) RemoveActorFromCasts(ctx context.Context, actorID int32) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.RemoveActorFromCasts")
+func (r *castsRepository) RemovePersonFromCasts(ctx context.Context, personID int32) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.RemovePersonFromCasts")
 	defer span.Finish()
 	var err error
 	defer span.SetTag("error", err != nil)
 
-	query := fmt.Sprintf("DELETE FROM %s WHERE actor_id=$1", castsTableName)
-	_, err = r.db.ExecContext(ctx, query, actorID)
+	query := fmt.Sprintf("DELETE FROM %s WHERE person_id=$1", castsTableName)
+	_, err = r.db.ExecContext(ctx, query, personID)
 	if err != nil {
-		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, actorID)
+		r.logger.Errorf("%v query: %s args: %v", err.Error(), query, personID)
 		return err
 	}
 
@@ -267,18 +267,18 @@ func (r *castsRepository) UpdateLabelForCast(ctx context.Context, id int32, labe
 	return nil
 }
 
-func (r *castsRepository) AddActorsToTheCast(ctx context.Context, id int32, actors []Actor) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.AddActorsToTheCast")
+func (r *castsRepository) AddPersonsToTheCast(ctx context.Context, id int32, persons []Person) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.AddPersonsToTheCast")
 	defer span.Finish()
 	var err error
 	defer span.SetTag("error", err != nil && !errors.Is(err, sql.ErrNoRows))
 
-	values := make([]string, 0, len(actors))
-	for _, actor := range actors {
-		values = append(values, fmt.Sprintf("(%d,%d,%d)", id, actor.ID, actor.ProfessionID))
+	values := make([]string, 0, len(persons))
+	for _, person := range persons {
+		values = append(values, fmt.Sprintf("(%d,%d,%d)", id, person.ID, person.ProfessionID))
 	}
 
-	query := fmt.Sprintf("INSERT INTO %s (movie_id,actor_id,profession_id) VALUES %s ON CONFLICT DO NOTHING;",
+	query := fmt.Sprintf("INSERT INTO %s (movie_id,person_id,profession_id) VALUES %s ON CONFLICT DO NOTHING;",
 		castsTableName, strings.Join(values, ","))
 
 	_, err = r.db.ExecContext(ctx, query)
@@ -290,19 +290,19 @@ func (r *castsRepository) AddActorsToTheCast(ctx context.Context, id int32, acto
 	return nil
 }
 
-func (r *castsRepository) RemoveActorsFromCast(ctx context.Context, id int32, actors []Actor) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.DeleteActorsFromTheCast")
+func (r *castsRepository) RemovePersonsFromCast(ctx context.Context, id int32, persons []Person) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "castsRepository.DeletePersonsFromTheCast")
 	defer span.Finish()
 	var err error
 	defer span.SetTag("error", err != nil)
 
-	statements := make([]string, 0, len(actors))
-	args := make([]any, 0, len(actors)*3)
+	statements := make([]string, 0, len(persons))
+	args := make([]any, 0, len(persons)*3)
 	args = append(args, id)
-	for _, actor := range actors {
-		args = append(args, actor.ID)
-		statements = append(statements, fmt.Sprintf("(actor_id=$%d AND profession_id=$%d)", len(args), len(args)+1))
-		args = append(args, actor.ProfessionID)
+	for _, person := range persons {
+		args = append(args, person.ID)
+		statements = append(statements, fmt.Sprintf("(person_id=$%d AND profession_id=$%d)", len(args), len(args)+1))
+		args = append(args, person.ProfessionID)
 	}
 
 	query := fmt.Sprintf("DELETE FROM %s WHERE movie_id=$1 AND(%s)", castsTableName, strings.Join(statements, " OR "))

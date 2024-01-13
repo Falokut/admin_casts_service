@@ -21,13 +21,13 @@ var ErrInvalidArgument = errors.New("invalid input data")
 type Cast struct {
 	ID             int32  `db:"movie_id"`
 	Label          string `db:"label"`
-	ActorID        int32  `json:"actor_id" db:"actor_id"`
+	PersonID        int32  `json:"person_id" db:"person_id"`
 	ProfessionID   int32  `json:"profession_id" db:"profession_id"`
 	ProfessionName string `json:"profession_name" db:"profession_name"`
 }
 
-type Actor struct {
-	ID           int32 `json:"id" db:"actor_id"`
+type Person struct {
+	ID           int32 `json:"id" db:"person_id"`
 	ProfessionID int32 `json:"profession_id" db:"profession_id"`
 }
 
@@ -47,12 +47,12 @@ type CastsRepository interface {
 	GetCasts(ctx context.Context, ids []int32, limit, offset int32) ([]Cast, error)
 	SearchCastByLabel(ctx context.Context, label string, limit, offset int32) ([]CastLabel, error)
 	IsCastExist(ctx context.Context, id int32) (bool, int32, error)
-	CreateCast(ctx context.Context, id int32, label string, actors []Actor) error
+	CreateCast(ctx context.Context, id int32, label string, persons []Person) error
 	DeleteCast(ctx context.Context, id int32) error
-	RemoveActorFromCasts(ctx context.Context, actorID int32) (err error)
+	RemovePersonFromCasts(ctx context.Context, personID int32) (err error)
 	UpdateLabelForCast(ctx context.Context, id int32, label string) error
-	AddActorsToTheCast(ctx context.Context, id int32, actors []Actor) error
-	RemoveActorsFromCast(ctx context.Context, id int32, actors []Actor) error
+	AddPersonsToTheCast(ctx context.Context, id int32, persons []Person) error
+	RemovePersonsFromCast(ctx context.Context, id int32, persons []Person) error
 
 	IsProfessionWithNameExists(ctx context.Context, name string) (bool, int32, error)
 	IsProfessionExists(ctx context.Context, id int32) (bool, error)

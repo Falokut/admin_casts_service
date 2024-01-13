@@ -7,7 +7,7 @@ import (
 
 type CastsRepository interface {
 	DeleteCast(ctx context.Context, id int32) error
-	RemoveActorFromCasts(ctx context.Context, actorID int32) (err error)
+	RemovePersonFromCasts(ctx context.Context, personID int32) (err error)
 }
 
 type KafkaWriterConfig struct {
