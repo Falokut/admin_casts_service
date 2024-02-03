@@ -19,11 +19,11 @@ var ErrNotFound = errors.New("entity not found")
 var ErrInvalidArgument = errors.New("invalid input data")
 
 type Cast struct {
-	ID             int32  `db:"movie_id"`
 	Label          string `db:"label"`
-	PersonID        int32  `json:"person_id" db:"person_id"`
-	ProfessionID   int32  `json:"profession_id" db:"profession_id"`
 	ProfessionName string `json:"profession_name" db:"profession_name"`
+	ID             int32  `db:"movie_id"`
+	PersonID       int32  `json:"person_id" db:"person_id"`
+	ProfessionID   int32  `json:"profession_id" db:"profession_id"`
 }
 
 type Person struct {

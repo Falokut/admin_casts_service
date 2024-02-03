@@ -202,6 +202,23 @@ func request_CastsServiceV1_UpdateLabelForCast_0(ctx context.Context, marshaler 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["MovieID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "MovieID")
+	}
+
+	protoReq.MovieID, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "MovieID", err)
+	}
+
 	msg, err := client.UpdateLabelForCast(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -217,6 +234,23 @@ func local_request_CastsServiceV1_UpdateLabelForCast_0(ctx context.Context, mars
 	}
 	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["MovieID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "MovieID")
+	}
+
+	protoReq.MovieID, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "MovieID", err)
 	}
 
 	msg, err := server.UpdateLabelForCast(ctx, &protoReq)
@@ -236,6 +270,23 @@ func request_CastsServiceV1_AddPersonsToTheCast_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["MovieID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "MovieID")
+	}
+
+	protoReq.MovieID, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "MovieID", err)
+	}
+
 	msg, err := client.AddPersonsToTheCast(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -251,6 +302,23 @@ func local_request_CastsServiceV1_AddPersonsToTheCast_0(ctx context.Context, mar
 	}
 	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["MovieID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "MovieID")
+	}
+
+	protoReq.MovieID, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "MovieID", err)
 	}
 
 	msg, err := server.AddPersonsToTheCast(ctx, &protoReq)
@@ -270,6 +338,23 @@ func request_CastsServiceV1_RemovePersonsFromTheCast_0(ctx context.Context, mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["MovieID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "MovieID")
+	}
+
+	protoReq.MovieID, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "MovieID", err)
+	}
+
 	msg, err := client.RemovePersonsFromTheCast(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -285,6 +370,23 @@ func local_request_CastsServiceV1_RemovePersonsFromTheCast_0(ctx context.Context
 	}
 	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["MovieID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "MovieID")
+	}
+
+	protoReq.MovieID, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "MovieID", err)
 	}
 
 	msg, err := server.RemovePersonsFromTheCast(ctx, &protoReq)
@@ -408,6 +510,23 @@ func request_CastsServiceV1_UpdateProfession_0(ctx context.Context, marshaler ru
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
 	msg, err := client.UpdateProfession(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -425,24 +544,47 @@ func local_request_CastsServiceV1_UpdateProfession_0(ctx context.Context, marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
 	msg, err := server.UpdateProfession(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-var (
-	filter_CastsServiceV1_DeleteProfession_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_CastsServiceV1_DeleteProfession_0(ctx context.Context, marshaler runtime.Marshaler, client CastsServiceV1Client, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteProfessionRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_CastsServiceV1_DeleteProfession_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Id, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
 	msg, err := client.DeleteProfession(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -454,11 +596,21 @@ func local_request_CastsServiceV1_DeleteProfession_0(ctx context.Context, marsha
 	var protoReq DeleteProfessionRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_CastsServiceV1_DeleteProfession_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Id, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
 	msg, err := server.DeleteProfession(ctx, &protoReq)
@@ -580,7 +732,7 @@ func RegisterCastsServiceV1HandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/UpdateLabelForCast", runtime.WithHTTPPathPattern("/v1/cast/label"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/UpdateLabelForCast", runtime.WithHTTPPathPattern("/v1/cast/{MovieID}/label"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -605,7 +757,7 @@ func RegisterCastsServiceV1HandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/AddPersonsToTheCast", runtime.WithHTTPPathPattern("/v1/cast/persons"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/AddPersonsToTheCast", runtime.WithHTTPPathPattern("/v1/cast/{MovieID}/persons/add"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -630,7 +782,7 @@ func RegisterCastsServiceV1HandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/RemovePersonsFromTheCast", runtime.WithHTTPPathPattern("/v1/cast/persons/delete"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/RemovePersonsFromTheCast", runtime.WithHTTPPathPattern("/v1/cast/{MovieID}/persons/delete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -680,7 +832,7 @@ func RegisterCastsServiceV1HandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/GetProfessions", runtime.WithHTTPPathPattern("/v1/cast/professions"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/GetProfessions", runtime.WithHTTPPathPattern("/v1/professions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -705,7 +857,7 @@ func RegisterCastsServiceV1HandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/CreateProfession", runtime.WithHTTPPathPattern("/v1/cast/professions"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/CreateProfession", runtime.WithHTTPPathPattern("/v1/professions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -730,7 +882,7 @@ func RegisterCastsServiceV1HandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/UpdateProfession", runtime.WithHTTPPathPattern("/v1/cast/professions/update"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/UpdateProfession", runtime.WithHTTPPathPattern("/v1/professions/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -755,7 +907,7 @@ func RegisterCastsServiceV1HandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/DeleteProfession", runtime.WithHTTPPathPattern("/v1/cast/professions"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/DeleteProfession", runtime.WithHTTPPathPattern("/v1/professions/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -907,7 +1059,7 @@ func RegisterCastsServiceV1HandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/UpdateLabelForCast", runtime.WithHTTPPathPattern("/v1/cast/label"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/UpdateLabelForCast", runtime.WithHTTPPathPattern("/v1/cast/{MovieID}/label"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -929,7 +1081,7 @@ func RegisterCastsServiceV1HandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/AddPersonsToTheCast", runtime.WithHTTPPathPattern("/v1/cast/persons"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/AddPersonsToTheCast", runtime.WithHTTPPathPattern("/v1/cast/{MovieID}/persons/add"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -951,7 +1103,7 @@ func RegisterCastsServiceV1HandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/RemovePersonsFromTheCast", runtime.WithHTTPPathPattern("/v1/cast/persons/delete"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/RemovePersonsFromTheCast", runtime.WithHTTPPathPattern("/v1/cast/{MovieID}/persons/delete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -995,7 +1147,7 @@ func RegisterCastsServiceV1HandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/GetProfessions", runtime.WithHTTPPathPattern("/v1/cast/professions"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/GetProfessions", runtime.WithHTTPPathPattern("/v1/professions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1017,7 +1169,7 @@ func RegisterCastsServiceV1HandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/CreateProfession", runtime.WithHTTPPathPattern("/v1/cast/professions"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/CreateProfession", runtime.WithHTTPPathPattern("/v1/professions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1039,7 +1191,7 @@ func RegisterCastsServiceV1HandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/UpdateProfession", runtime.WithHTTPPathPattern("/v1/cast/professions/update"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/UpdateProfession", runtime.WithHTTPPathPattern("/v1/professions/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1061,7 +1213,7 @@ func RegisterCastsServiceV1HandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/DeleteProfession", runtime.WithHTTPPathPattern("/v1/cast/professions"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/admin_casts_service.CastsServiceV1/DeleteProfession", runtime.WithHTTPPathPattern("/v1/professions/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1089,21 +1241,21 @@ var (
 
 	pattern_CastsServiceV1_CreateCast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "cast"}, ""))
 
-	pattern_CastsServiceV1_UpdateLabelForCast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "cast", "label"}, ""))
+	pattern_CastsServiceV1_UpdateLabelForCast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "cast", "MovieID", "label"}, ""))
 
-	pattern_CastsServiceV1_AddPersonsToTheCast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "cast", "persons"}, ""))
+	pattern_CastsServiceV1_AddPersonsToTheCast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "cast", "MovieID", "persons", "add"}, ""))
 
-	pattern_CastsServiceV1_RemovePersonsFromTheCast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "cast", "persons", "delete"}, ""))
+	pattern_CastsServiceV1_RemovePersonsFromTheCast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "cast", "MovieID", "persons", "delete"}, ""))
 
 	pattern_CastsServiceV1_DeleteCast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "cast", "movie_id"}, ""))
 
-	pattern_CastsServiceV1_GetProfessions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "cast", "professions"}, ""))
+	pattern_CastsServiceV1_GetProfessions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "professions"}, ""))
 
-	pattern_CastsServiceV1_CreateProfession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "cast", "professions"}, ""))
+	pattern_CastsServiceV1_CreateProfession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "professions"}, ""))
 
-	pattern_CastsServiceV1_UpdateProfession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"v1", "cast", "professions", "update"}, ""))
+	pattern_CastsServiceV1_UpdateProfession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "professions", "id"}, ""))
 
-	pattern_CastsServiceV1_DeleteProfession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "cast", "professions"}, ""))
+	pattern_CastsServiceV1_DeleteProfession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "professions", "id"}, ""))
 )
 
 var (

@@ -5,14 +5,14 @@ listen:
   host: 0.0.0.0
   port: 8080
   server_mode: "BOTH"
-  
-db_config: 
+
+db_config:
   host: "casts_pool"
   port: "6432"
   username: "admin_casts_service"
   db_name: "casts"
   ssl_mode: "disable"
-  
+
 jaeger:
   service_name: "Admin_Casts_Service"
   address: jaeger:6831
@@ -23,7 +23,6 @@ prometheus:
   server_config:
     host: 0.0.0.0
     port: 7000
-
 
 movies_events_kafka:
   brokers:
@@ -38,11 +37,11 @@ persons_events_kafka:
   read_batch_timeout: 30s
 
 movies_service:
-  addr: host.docker.internal:91
+  addr: falokut:444
+  connection_config:
+    dial_method: NIL_TLS_CONFIG
 
 movies_persons_service:
-  addr: host.docker.internal:91
-
-
-
-
+  addr: falokut:444
+  connection_config:
+    dial_method: NIL_TLS_CONFIG

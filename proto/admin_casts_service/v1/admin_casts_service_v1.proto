@@ -74,21 +74,21 @@ service castsServiceV1 {
 
   rpc UpdateLabelForCast(UpdateLabelForCastRequest)returns(google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/cast/label"
+      post: "/v1/cast/{MovieID}/label"
       body: "*"
     };
   }
 
   rpc AddPersonsToTheCast(AddPersonsToTheCastRequest)returns(google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/cast/persons"
+      post: "/v1/cast/{MovieID}/persons/add"
       body: "*"
     };
   }
 
   rpc RemovePersonsFromTheCast(RemovePersonsFromTheCastRequest)returns(google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/cast/persons/delete"
+      post: "/v1/cast/{MovieID}/persons/delete"
       body: "*"
     };
   }
@@ -101,27 +101,27 @@ service castsServiceV1 {
 
   rpc GetProfessions(google.protobuf.Empty) returns(Professions) {
 		option (google.api.http) = {
-			get:"/v1/cast/professions"
+			get:"/v1/professions"
 		};
 	}
   
   rpc CreateProfession(CreateProfessionRequest) returns(CreateProfessionResponse) {
     option (google.api.http) = {
-			post:"/v1/cast/professions"
+			post:"/v1/professions"
       body:"*"
 		};
   }
   
   rpc UpdateProfession(UpdateProfessionRequest) returns(google.protobuf.Empty) {
     option (google.api.http) = {
-			post:"/v1/cast/professions/update"
+			post:"/v1/professions/{id}"
       body:"*"
 		};
   }
 
   rpc DeleteProfession(DeleteProfessionRequest) returns(google.protobuf.Empty) {
     option (google.api.http) = {
-			delete:"/v1/cast/professions"
+			delete:"/v1/professions/{id}"
 		};
   }
 }

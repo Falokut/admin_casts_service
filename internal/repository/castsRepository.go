@@ -131,7 +131,7 @@ func (r *castsRepository) SearchCastByLabel(ctx context.Context, label string, l
 	var err error
 	defer span.SetTag("error", err != nil)
 
-	query := fmt.Sprintf("SELECT %[1]s.movie_id as movie_id, label "+
+	query := fmt.Sprintf("SELECT DISTINCT %[1]s.movie_id AS movie_id, label "+
 		"FROM %[1]s JOIN %[2]s ON %[1]s.movie_id=%[2]s.movie_id WHERE label LIKE($1) "+
 		"LIMIT %[3]d OFFSET %[4]d;", castsTableName, castsLabelsTableName, limit, offset)
 
@@ -297,12 +297,11 @@ func (r *castsRepository) RemovePersonsFromCast(ctx context.Context, id int32, p
 	defer span.SetTag("error", err != nil)
 
 	statements := make([]string, 0, len(persons))
-	args := make([]any, 0, len(persons)*3)
+	args := make([]any, 0, len(persons)*2+1)
 	args = append(args, id)
 	for _, person := range persons {
-		args = append(args, person.ID)
-		statements = append(statements, fmt.Sprintf("(person_id=$%d AND profession_id=$%d)", len(args), len(args)+1))
-		args = append(args, person.ProfessionID)
+		statements = append(statements, fmt.Sprintf("(person_id=$%d AND profession_id=$%d)", len(args)+1, len(args)+2))
+		args = append(args, person.ID, person.ProfessionID)
 	}
 
 	query := fmt.Sprintf("DELETE FROM %s WHERE movie_id=$1 AND(%s)", castsTableName, strings.Join(statements, " OR "))

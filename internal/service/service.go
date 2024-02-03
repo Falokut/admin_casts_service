@@ -54,9 +54,14 @@ func (s *castsService) GetCast(ctx context.Context, in *casts_service.GetCastReq
 	span.SetTag("grpc.status", codes.OK)
 
 	var protoCast = &casts_service.Cast{MovieID: cast[0].ID, CastLabel: cast[0].Label}
-	for _, c := range cast {
-		protoCast.Persons = append(protoCast.Persons, &casts_service.Person{ID: c.PersonID,
-			Profession: &casts_service.Profession{ID: c.ProfessionID, Name: c.ProfessionName}})
+	for i := range cast {
+		protoCast.Persons = append(protoCast.Persons, &casts_service.Person{
+			ID: cast[i].PersonID,
+			Profession: &casts_service.Profession{
+				ID:   cast[i].ProfessionID,
+				Name: cast[i].ProfessionName,
+			},
+		})
 	}
 
 	return protoCast, nil
@@ -306,22 +311,26 @@ func (s *castsService) checkCastExisting(ctx context.Context, id int32) (int32, 
 
 func convertCastsToProto(casts []repository.Cast) *casts_service.Casts {
 	type CastInfo struct {
-		Persons    []*casts_service.Person
+		Persons   []*casts_service.Person
 		CastLabel string
 	}
 
 	var protoPersonsByCast = make(map[int32]CastInfo)
-
-	for _, cast := range casts {
-		castInfo, ok := protoPersonsByCast[cast.ID]
+	for i := range casts {
+		castInfo, ok := protoPersonsByCast[casts[i].ID]
 		if !ok {
 			castInfo = CastInfo{
-				CastLabel: cast.Label}
+				CastLabel: casts[i].Label}
 			castInfo.Persons = make([]*casts_service.Person, 0, 6)
 		}
-		castInfo.Persons = append(castInfo.Persons, &casts_service.Person{ID: cast.PersonID,
-			Profession: &casts_service.Profession{ID: cast.ProfessionID, Name: cast.ProfessionName}})
-		protoPersonsByCast[cast.ID] = castInfo
+		castInfo.Persons = append(castInfo.Persons, &casts_service.Person{
+			ID: casts[i].PersonID,
+			Profession: &casts_service.Profession{
+				ID:   casts[i].ProfessionID,
+				Name: casts[i].ProfessionName,
+			},
+		})
+		protoPersonsByCast[casts[i].ID] = castInfo
 	}
 	proto := &casts_service.Casts{}
 	proto.Casts = make([]*casts_service.Cast, 0, len(casts))
@@ -329,7 +338,7 @@ func convertCastsToProto(casts []repository.Cast) *casts_service.Casts {
 		proto.Casts = append(proto.Casts, &casts_service.Cast{
 			MovieID:   castID,
 			CastLabel: info.CastLabel,
-			Persons:    info.Persons,
+			Persons:   info.Persons,
 		})
 	}
 
@@ -410,7 +419,7 @@ func (s *castsService) UpdateProfession(ctx context.Context,
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrAlreadyExists, fmt.Sprintf("profession already exists, check profession with id %d", id))
 	}
 
-	exist, err = s.repo.IsProfessionExists(ctx, in.ID)
+	exist, err = s.repo.IsProfessionExists(ctx, in.Id)
 	if err != nil {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	}
@@ -418,7 +427,7 @@ func (s *castsService) UpdateProfession(ctx context.Context,
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrNotFound, "profession not found")
 	}
 
-	err = s.repo.UpdateProfession(ctx, in.ID, in.Name)
+	err = s.repo.UpdateProfession(ctx, in.Id, in.Name)
 	if err != nil {
 		return nil, s.errorHandler.createErrorResponceWithSpan(span, ErrInternal, err.Error())
 	}

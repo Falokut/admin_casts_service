@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/Falokut/admin_casts_service/internal/config"
 	casts_service "github.com/Falokut/admin_casts_service/pkg/admin_casts_service/v1/protos"
 	movies_persons_service "github.com/Falokut/admin_movies_persons_service/pkg/admin_movies_persons_service/v1/protos"
 	movies_service "github.com/Falokut/admin_movies_service/pkg/admin_movies_service/v1/protos"
@@ -13,7 +14,6 @@ import (
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/sirupsen/logrus"
 )
@@ -23,8 +23,8 @@ type personsChecker struct {
 	conn   *grpc.ClientConn
 }
 
-func NewPersonsChecker(addr string) (*personsChecker, error) {
-	conn, err := getGrpcConnection(addr)
+func NewPersonsChecker(addr string, cfg config.ConnectionSecureConfig) (*personsChecker, error) {
+	conn, err := getGrpcConnection(addr, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +50,8 @@ type moviesChecker struct {
 	conn   *grpc.ClientConn
 }
 
-func NewMoviesChecker(addr string) (*moviesChecker, error) {
-	conn, err := getGrpcConnection(addr)
+func NewMoviesChecker(addr string, cfg config.ConnectionSecureConfig) (*moviesChecker, error) {
+	conn, err := getGrpcConnection(addr, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -190,9 +190,13 @@ func (c *existanceChecker) CheckExistance(ctx context.Context, persons []*casts_
 	}
 }
 
-func getGrpcConnection(addr string) (*grpc.ClientConn, error) {
+func getGrpcConnection(addr string, cfg config.ConnectionSecureConfig) (*grpc.ClientConn, error) {
+	creds, err := cfg.GetGrpcTransportCredentials()
+	if err != nil {
+		return nil, err
+	}
 	return grpc.Dial(addr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		creds,
 		grpc.WithUnaryInterceptor(
 			otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())),
 		grpc.WithStreamInterceptor(

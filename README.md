@@ -7,6 +7,7 @@
         + [Prometheus config](#prometheus-config)
         + [Kafka reader config](#kafka-reader-config)
         + [time.Duration](#timeduration-yaml-supported-values)
+        + [Secure connection config](#secure-connection-config)
 + [Metrics](#metrics)
 + [Docs](#docs)
 + [Author](#author)
@@ -36,6 +37,10 @@ if supported values is empty, then any type values are supported
 | allowed_headers   |  listen    |  |   []string, array of strings   | list of all allowed custom headers. Need for REST API gateway, list of metadata headers, hat are passed through the gateway into the service | any strings list|
 |service_name|  prometheus    | PROMETHEUS_SERVICE_NAME | string |  service name, thats will show in prometheus  ||
 |server_config|  prometheus    |   | nested yml configuration  [metrics server config](#prometheus-config) | |
+| addr   |  movies_service    | MOVIES_SERVICE_ADDRESS  |   string   |  address of the movies service|  |
+| connection_config   |  movies_service    |  |  nested yml configuration [secure connection config](#secure-connection-config)||  |
+| addr   |  movies_persons_service    | MOVIES_PERSONS_SERVICE_ADDRESS  |   string   |  address of the movies service|  |
+| connection_config   |  movies_persons_service    |  |  nested yml configuration [secure connection config](#secure-connection-config)||  |
 |db_config|||nested yml configuration  [database config](#database-config) || configuration for database connection | |
 |jaeger|||nested yml configuration  [jaeger config](#jaeger-config)|configuration for jaeger connection ||
 |movies_events_kafka|||nested yml configuration  [kafka reader config](#kafka-reader-config)|configuration for kafka connection ||
@@ -81,6 +86,14 @@ A Duration value can be expressed in various formats, such as in seconds, minute
 - 500ms represents a duration of 500 milliseconds.
 - 100µs represents a duration of 100 microseconds.
 - 10ns represents a duration of 10 nanoseconds.
+
+# Secure connection config
+|yml name| param type| description | supported values |
+|-|-|-|-|
+|dial_method|string|dial method|INSECURE,NIL_TLS_CONFIG,CLIENT_WITH_SYSTEM_CERT_POOL,SERVER|
+|server_name|string|server name overriding, used when dial_method=CLIENT_WITH_SYSTEM_CERT_POOL||
+|cert_name|string|certificate file name, used when dial_method=SERVER||
+|key_name|string|key file name, used when dial_method=SERVER||
 
 # Metrics
 The service uses Prometheus and Jaeger and supports distribution tracing

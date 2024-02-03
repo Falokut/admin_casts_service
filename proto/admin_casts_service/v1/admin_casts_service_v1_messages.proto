@@ -51,7 +51,7 @@ message CreateProfessionResponse {
   int32 id = 1;
 }
 message UpdateProfessionRequest {
-  int32 ID = 1[json_name="id"];
+  int32 id = 1;
   string name = 2;
 }
 
@@ -101,7 +101,7 @@ message AddPersonsToTheCastRequest {
 
 message RemovePersonsFromTheCastRequest {
   int32 MovieID = 1[json_name="movie_id"];
-  repeated PersonParam Persons = 3[json_name="persons"];
+  repeated PersonParam Persons = 2[json_name="persons"];
 }
 
 message DeleteCastRequest {

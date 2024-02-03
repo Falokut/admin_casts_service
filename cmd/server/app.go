@@ -26,40 +26,44 @@ import (
 func main() {
 	logging.NewEntry(logging.ConsoleOutput)
 	logger := logging.GetLogger()
+	cfg := config.GetConfig()
 
-	appCfg := config.GetConfig()
-	logLevel, err := logrus.ParseLevel(appCfg.LogLevel)
+	logLevel, err := logrus.ParseLevel(cfg.LogLevel)
 	if err != nil {
 		logger.Fatal(err)
 	}
 	logger.Logger.SetLevel(logLevel)
 
-	tracer, closer, err := jaegerTracer.InitJaeger(appCfg.JaegerConfig)
+	tracer, closer, err := jaegerTracer.InitJaeger(cfg.JaegerConfig)
 	if err != nil {
-		logger.Fatal("cannot create tracer", err)
+		logger.Errorf("Shutting down, error while creating tracer %v", err)
+		return
 	}
 	logger.Info("Jaeger connected")
 	defer closer.Close()
-
 	opentracing.SetGlobalTracer(tracer)
 
 	logger.Info("Metrics initializing")
-	metric, err := metrics.CreateMetrics(appCfg.PrometheusConfig.Name)
+	metric, err := metrics.CreateMetrics(cfg.PrometheusConfig.Name)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Errorf("Shutting down, error while creating metrics %v", err)
+		return
 	}
 
+	shutdown := make(chan error, 1)
 	go func() {
 		logger.Info("Metrics server running")
-		if err := metrics.RunMetricServer(appCfg.PrometheusConfig.ServerConfig); err != nil {
-			logger.Fatal(err)
+		if err := metrics.RunMetricServer(cfg.PrometheusConfig.ServerConfig); err != nil {
+			logger.Errorf("Shutting down, error while running metrics server %v", err)
+			shutdown <- err
 		}
 	}()
 
 	logger.Info("Database initializing")
-	database, err := repository.NewPostgreDB(appCfg.DBConfig)
+	database, err := repository.NewPostgreDB(cfg.DBConfig)
 	if err != nil {
-		logger.Fatalf("Shutting down, connection to the database is not established: %s", err.Error())
+		logger.Errorf("Shutting down, connection to the database is not established: %s", err.Error())
+		return
 	}
 
 	logger.Info("Repository initializing")
@@ -68,11 +72,12 @@ func main() {
 
 	logger.Info("Healthcheck initializing")
 	healthcheckManager := healthcheck.NewHealthManager(logger.Logger,
-		[]healthcheck.HealthcheckResource{database}, appCfg.HealthcheckPort, nil)
+		[]healthcheck.HealthcheckResource{database}, cfg.HealthcheckPort, nil)
 	go func() {
 		logger.Info("Healthcheck server running")
 		if err := healthcheckManager.RunHealthcheckEndpoint(); err != nil {
-			logger.Fatalf("Shutting down, can't run healthcheck endpoint %s", err.Error())
+			logger.Errorf("Shutting down, can't run healthcheck endpoint %s", err.Error())
+			shutdown <- err
 		}
 	}()
 
@@ -83,7 +88,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		logger.Info("Running movie event consumer")
-		movieEventsConsumer := events.NewMovieEventsConsumer(getKafkaReaderConfig(appCfg.KafkaMoviesEventsConfig),
+		movieEventsConsumer := events.NewMovieEventsConsumer(getKafkaReaderConfig(cfg.KafkaMoviesEventsConfig),
 			logger.Logger, repo)
 		movieEventsConsumer.Run(ctx)
 		wg.Done()
@@ -92,20 +97,28 @@ func main() {
 	wg.Add(1)
 	go func() {
 		logger.Info("Running person event consumer")
-		personEventsConsumer := events.NewPersonEventsConsumer(getKafkaReaderConfig(appCfg.KafkaMoviesEventsConfig),
+		personEventsConsumer := events.NewPersonEventsConsumer(getKafkaReaderConfig(cfg.KafkaMoviesEventsConfig),
 			logger.Logger, repo)
 		personEventsConsumer.Run(ctx)
 		wg.Done()
 	}()
 
-	moviesCheck, err := service.NewMoviesChecker(appCfg.MoviesService.Addr)
+	moviesCheck, err := service.NewMoviesChecker(cfg.MoviesService.Addr,
+		cfg.MoviesService.ConnectionConfig)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Errorf("Shutting down, error while creating movies checker %v", err)
+		return
 	}
-	personsCheck, err := service.NewPersonsChecker(appCfg.MoviesPersonsService.Addr)
+	defer moviesCheck.Shutdown()
+
+	personsCheck, err := service.NewPersonsChecker(cfg.MoviesPersonsService.Addr,
+		cfg.MoviesPersonsService.ConnectionConfig)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Errorf("Shutting down, error while creating persons checker %v", err)
+		return
 	}
+	defer personsCheck.Shutdown()
+
 	checker := service.NewExistanceChecker(moviesCheck, personsCheck, logger.Logger)
 
 	logger.Info("Service initializing")
@@ -113,13 +126,24 @@ func main() {
 
 	logger.Info("Server initializing")
 	s := server.NewServer(logger.Logger, service)
-	s.Run(getListenServerConfig(appCfg), metric, nil, nil)
+	go func() {
+		if err := s.Run(getListenServerConfig(cfg), metric, nil, nil); err != nil {
+			logger.Errorf("Shutting down, error while running server endpoint %s", err.Error())
+			shutdown <- err
+		}
+	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGHUP, syscall.SIGTERM)
 
-	<-quit
+	select {
+	case <-quit:
+		break
+	case <-shutdown:
+		break
+	}
 	s.Shutdown()
+	cancel()
 	wg.Wait()
 }
 
