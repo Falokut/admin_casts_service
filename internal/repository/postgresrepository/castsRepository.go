@@ -9,6 +9,8 @@ import (
 
 	"github.com/Falokut/admin_casts_service/internal/models"
 	"github.com/Falokut/admin_casts_service/internal/repository"
+	_ "github.com/jackc/pgx/v5"
+	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -34,7 +36,6 @@ func NewPostgreDB(cfg *repository.DBConfig) (*sqlx.DB, error) {
 
 	return db, nil
 }
-
 func (r *castsRepository) Shutdown() {
 	err := r.db.Close()
 	if err != nil {

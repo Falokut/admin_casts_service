@@ -62,7 +62,6 @@ if supported values is empty, then any type values are supported
 |password|DB_PASSWORD|string|password for role in database||
 |db_name|DB_NAME|string|database name (database instance)||
 |ssl_mode|DB_SSL_MODE|string|enable or disable ssl mode for database connection|disabled or enabled|
-|enable_prepared_statements|DB_ENABLE_PREPARED_STATEMENTS|bool|enable or disable prepared statements, if you use PgBouncer, disable it or use server_reset_query = DISCARD ALL in pgbouncer.ini in [pgbouncer] section|true or false|
 
 ### Jaeger config
 
