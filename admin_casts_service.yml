@@ -11,7 +11,8 @@ networks:
 
 services:
   admin_casts_service:
-    build: ./
+    build:
+      dockerfile: alpine.Dockerfile
     command: ./bin/app
     volumes:
       - ./docker/containers-configs/:/configs
@@ -20,14 +21,14 @@ services:
     networks:
       - admin_casts_service_network
       - casts_db_network
-      - kafka_network
+      #- kafka_network
     environment:
       DB_PASSWORD: ${DB_PASSWORD}
-    depends_on:
-      casts_pool:
-        condition: service_started
-      kafka:
-        condition: service_healthy
+    #depends_on:
+    # casts_pool:
+    #  condition: service_started
+    #kafka:
+    #   condition: service_healthy
     healthcheck:
       test: wget --no-verbose --tries=1 --spider 'http://localhost:7001/healthcheck' || exit 1
       interval: 40s

@@ -10,18 +10,66 @@ import (
 
 	"github.com/Falokut/admin_casts_service/internal/config"
 	"github.com/Falokut/admin_casts_service/internal/events"
-	"github.com/Falokut/admin_casts_service/internal/repository"
+	"github.com/Falokut/admin_casts_service/internal/handler"
+	"github.com/Falokut/admin_casts_service/internal/moviesservice"
+	"github.com/Falokut/admin_casts_service/internal/personsservice"
+	"github.com/Falokut/admin_casts_service/internal/repository/postgresrepository"
 	"github.com/Falokut/admin_casts_service/internal/service"
 	casts_service "github.com/Falokut/admin_casts_service/pkg/admin_casts_service/v1/protos"
 	jaegerTracer "github.com/Falokut/admin_casts_service/pkg/jaeger"
+	"github.com/Falokut/admin_casts_service/pkg/logging"
 	"github.com/Falokut/admin_casts_service/pkg/metrics"
 	server "github.com/Falokut/grpc_rest_server"
 	"github.com/Falokut/healthcheck"
-	logging "github.com/Falokut/online_cinema_ticket_office.loggerwrapper"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/opentracing/opentracing-go"
 	"github.com/sirupsen/logrus"
 )
+
+func initHealthcheck(cfg *config.Config, shutdown chan error, resources []healthcheck.HealthcheckResource) {
+	logger := logging.GetLogger()
+	logger.Info("Healthcheck initializing")
+	healthcheckManager := healthcheck.NewHealthManager(logger.Logger,
+		resources, cfg.HealthcheckPort, nil)
+	go func() {
+		logger.Info("Healthcheck server running")
+		if err := healthcheckManager.RunHealthcheckEndpoint(); err != nil {
+			logger.Errorf("Shutting down, can't run healthcheck endpoint %v", err)
+			shutdown <- err
+		}
+	}()
+}
+
+func initMetrics(cfg *config.Config, shutdown chan error) (metrics.Metrics, error) {
+	logger := logging.GetLogger()
+
+	tracer, closer, err := jaegerTracer.InitJaeger(cfg.JaegerConfig)
+	if err != nil {
+		logger.Errorf("Shutting down, error while creating tracer %v", err)
+		return nil, err
+	}
+
+	logger.Info("Jaeger connected")
+	defer closer.Close()
+	opentracing.SetGlobalTracer(tracer)
+
+	logger.Info("Metrics initializing")
+	metric, err := metrics.CreateMetrics(cfg.PrometheusConfig.Name)
+	if err != nil {
+		logger.Errorf("Shutting down, error while creating metrics %v", err)
+		return nil, err
+	}
+
+	go func() {
+		logger.Info("Metrics server running")
+		if err := metrics.RunMetricServer(cfg.PrometheusConfig.ServerConfig); err != nil {
+			logger.Errorf("Shutting down, error while running metrics server %v", err)
+			shutdown <- err
+		}
+	}()
+
+	return metric, nil
+}
 
 func main() {
 	logging.NewEntry(logging.ConsoleOutput)
@@ -34,52 +82,24 @@ func main() {
 	}
 	logger.Logger.SetLevel(logLevel)
 
-	tracer, closer, err := jaegerTracer.InitJaeger(cfg.JaegerConfig)
-	if err != nil {
-		logger.Errorf("Shutting down, error while creating tracer %v", err)
-		return
-	}
-	logger.Info("Jaeger connected")
-	defer closer.Close()
-	opentracing.SetGlobalTracer(tracer)
-
-	logger.Info("Metrics initializing")
-	metric, err := metrics.CreateMetrics(cfg.PrometheusConfig.Name)
-	if err != nil {
-		logger.Errorf("Shutting down, error while creating metrics %v", err)
-		return
-	}
-
 	shutdown := make(chan error, 1)
-	go func() {
-		logger.Info("Metrics server running")
-		if err := metrics.RunMetricServer(cfg.PrometheusConfig.ServerConfig); err != nil {
-			logger.Errorf("Shutting down, error while running metrics server %v", err)
-			shutdown <- err
-		}
-	}()
+	metric, err := initMetrics(cfg, shutdown)
+	if err != nil {
+		return
+	}
 
 	logger.Info("Database initializing")
-	database, err := repository.NewPostgreDB(cfg.DBConfig)
+	database, err := postgresrepository.NewPostgreDB(&cfg.DBConfig)
 	if err != nil {
 		logger.Errorf("Shutting down, connection to the database is not established: %s", err.Error())
 		return
 	}
 
 	logger.Info("Repository initializing")
-	repo := repository.NewCastsRepository(database, logger.Logger)
+	repo := postgresrepository.NewCastsRepository(database, logger.Logger)
 	defer repo.Shutdown()
 
-	logger.Info("Healthcheck initializing")
-	healthcheckManager := healthcheck.NewHealthManager(logger.Logger,
-		[]healthcheck.HealthcheckResource{database}, cfg.HealthcheckPort, nil)
-	go func() {
-		logger.Info("Healthcheck server running")
-		if err := healthcheckManager.RunHealthcheckEndpoint(); err != nil {
-			logger.Errorf("Shutting down, can't run healthcheck endpoint %s", err.Error())
-			shutdown <- err
-		}
-	}()
+	initHealthcheck(cfg, shutdown, []healthcheck.HealthcheckResource{database})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -87,49 +107,42 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
-		logger.Info("Running movie event consumer")
-		movieEventsConsumer := events.NewMovieEventsConsumer(getKafkaReaderConfig(cfg.KafkaMoviesEventsConfig),
+		logger.Info("Running events consumer")
+		eventsConsumer := events.NewEventsConsumer(getKafkaReaderConfig(cfg.KafkaEventsConfig),
 			logger.Logger, repo)
-		movieEventsConsumer.Run(ctx)
+		eventsConsumer.Run(ctx)
 		wg.Done()
 	}()
 
-	wg.Add(1)
-	go func() {
-		logger.Info("Running person event consumer")
-		personEventsConsumer := events.NewPersonEventsConsumer(getKafkaReaderConfig(cfg.KafkaMoviesEventsConfig),
-			logger.Logger, repo)
-		personEventsConsumer.Run(ctx)
-		wg.Done()
-	}()
-
-	moviesCheck, err := service.NewMoviesChecker(cfg.MoviesService.Addr,
-		cfg.MoviesService.ConnectionConfig)
+	moviesService, err := moviesservice.NewMoviesService(cfg.MoviesService.Addr,
+		cfg.MoviesService.ConnectionConfig, logger.Logger)
 	if err != nil {
-		logger.Errorf("Shutting down, error while creating movies checker %v", err)
+		logger.Errorf("Shutting down, error while creating movies service %v", err)
 		return
 	}
-	defer moviesCheck.Shutdown()
+	defer moviesService.Shutdown()
 
-	personsCheck, err := service.NewPersonsChecker(cfg.MoviesPersonsService.Addr,
-		cfg.MoviesPersonsService.ConnectionConfig)
+	personsService, err := personsservice.NewPersonsService(cfg.MoviesPersonsService.Addr,
+		cfg.MoviesPersonsService.ConnectionConfig, logger.Logger)
 	if err != nil {
-		logger.Errorf("Shutting down, error while creating persons checker %v", err)
+		logger.Errorf("Shutting down, error while creating persons service %v", err)
 		return
 	}
-	defer personsCheck.Shutdown()
+	defer personsService.Shutdown()
 
-	checker := service.NewExistanceChecker(moviesCheck, personsCheck, logger.Logger)
+	checker := service.NewExistanceChecker(moviesService, personsService)
 
 	logger.Info("Service initializing")
-	service := service.NewCastsService(logger.Logger, repo, checker)
+	s := service.NewCastsService(logger.Logger, repo, checker)
+	logger.Info("Handler initializing")
+	h := handler.NewCastsService(s)
 
 	logger.Info("Server initializing")
-	s := server.NewServer(logger.Logger, service)
+	serv := server.NewServer(logger.Logger, h)
 	go func() {
-		if err := s.Run(getListenServerConfig(cfg), metric, nil, nil); err != nil {
-			logger.Errorf("Shutting down, error while running server endpoint %s", err.Error())
-			shutdown <- err
+		if serr := serv.Run(getListenServerConfig(cfg), metric, nil, nil); serr != nil {
+			logger.Errorf("Shutting down, error while running server endpoint %v", serr)
+			shutdown <- serr
 		}
 	}()
 
@@ -142,7 +155,7 @@ func main() {
 	case <-shutdown:
 		break
 	}
-	s.Shutdown()
+	serv.Shutdown()
 	cancel()
 	wg.Wait()
 }
@@ -167,7 +180,7 @@ func getListenServerConfig(cfg *config.Config) server.Config {
 				return errors.New(" can't convert")
 			}
 
-			return casts_service.RegisterCastsServiceV1HandlerServer(context.Background(),
+			return casts_service.RegisterCastsServiceV1HandlerServer(ctx,
 				mux, serv)
 		},
 	}

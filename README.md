@@ -1,3 +1,11 @@
+# Admin casts service
+[![Go Report Card](https://goreportcard.com/badge/github.com/Falokut/admin_casts_service)](https://goreportcard.com/report/github.com/Falokut/admin_casts_service)
+[![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/Falokut/admin_casts_service)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/Falokut/admin_casts_service)
+[![Go](https://github.com/Falokut/admin_casts_service/actions/workflows/go.yml/badge.svg?branch=master)](https://github.com/Falokut/admin_casts_service/actions/workflows/go.yml) ![](https://changkun.de/urlstat?mode=github&repo=Falokut/admin_casts_service)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+---
+
 # Content
 
 + [Configuration](#configuration)
@@ -43,8 +51,7 @@ if supported values is empty, then any type values are supported
 | connection_config   |  movies_persons_service    |  |  nested yml configuration [secure connection config](#secure-connection-config)||  |
 |db_config|||nested yml configuration  [database config](#database-config) || configuration for database connection | |
 |jaeger|||nested yml configuration  [jaeger config](#jaeger-config)|configuration for jaeger connection ||
-|movies_events_kafka|||nested yml configuration  [kafka reader config](#kafka-reader-config)|configuration for kafka connection ||
-|persons_events_kafka|||nested yml configuration  [kafka reader config](#kafka-reader-config)|configuration for kafka connection ||
+|kafka_events_config|||nested yml configuration  [kafka reader config](#kafka-reader-config)|configuration for kafka connection ||
 
 ### Database config
 |yml name| env name|param type| description | supported values |
@@ -90,10 +97,8 @@ A Duration value can be expressed in various formats, such as in seconds, minute
 # Secure connection config
 |yml name| param type| description | supported values |
 |-|-|-|-|
-|dial_method|string|dial method|INSECURE,NIL_TLS_CONFIG,CLIENT_WITH_SYSTEM_CERT_POOL,SERVER|
+|dial_method|string|dial method|INSECURE,INSECURE_SKIP_VERIFY,CLIENT_WITH_SYSTEM_CERT_POOL|
 |server_name|string|server name overriding, used when dial_method=CLIENT_WITH_SYSTEM_CERT_POOL||
-|cert_name|string|certificate file name, used when dial_method=SERVER||
-|key_name|string|key file name, used when dial_method=SERVER||
 
 # Metrics
 The service uses Prometheus and Jaeger and supports distribution tracing
